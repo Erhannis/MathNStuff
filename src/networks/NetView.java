@@ -28,7 +28,7 @@ import mathnstuff.MeMath;
  *
  * @author mewer12
  */
-public class InfoView extends JPanel {
+public class NetView extends JPanel {
     public Network network = null;
     
     public double xTrans = 0;
@@ -48,7 +48,7 @@ public class InfoView extends JPanel {
     public boolean hideFakeEdges = false;
     public boolean hideFakeEdgeMirrors = false;
 
-    public InfoView(Network network) {
+    public NetView(Network network) {
         this.network = network;
         this.setFocusable(true);
     }
@@ -252,7 +252,7 @@ public class InfoView extends JPanel {
                     if (selected.size() > 0) {
                         menu.add(mitemRemoveNode);
                     }
-                    menu.show(InfoView.this, e.getX(), e.getY());
+                    menu.show(NetView.this, e.getX(), e.getY());
                 }
             }
 
