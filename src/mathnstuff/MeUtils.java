@@ -8,6 +8,8 @@ package mathnstuff;
 
 import java.lang.reflect.Array;
 import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -285,5 +287,35 @@ public class MeUtils {
             bucket = ((Object[])bucket)[index[i]];
         }
         ((char[])bucket)[index[index.length - 1]] = value;
+    }
+    
+    public static String arrayToString(Object array) { 
+        StringBuilder sb = arrayToStringBuilder(array);
+        return sb.toString();
+    }
+
+    public static StringBuilder arrayToStringBuilder(Object array) { 
+        StringBuilder sb = new StringBuilder();
+        if (array == null) {
+            sb.append(array);
+            return sb;
+        }
+        if (array.getClass().isArray()) {
+            int length = Array.getLength(array);
+            sb.append("{");
+            if (length > 0) {
+                Object bucket = Array.get(array, 0);
+                sb.append(arrayToStringBuilder(bucket));
+            }
+            for (int i = 1; i < length; i++) {
+                Object bucket = Array.get(array, i);
+                sb.append(", ");
+                sb.append(arrayToStringBuilder(bucket));
+            }
+            sb.append("}");
+        } else {
+            sb.append(array.toString());
+        }
+        return sb;
     }
 }
