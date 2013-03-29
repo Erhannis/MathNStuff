@@ -85,6 +85,31 @@ public class NVector {
         return this;
     }
     
+    /**
+     * Mathematically illegal, but shorthand for "add s to every element."
+     * @param s
+     * @return 
+     */
+    public NVector plusS(double s) {
+        NVector result = new NVector(dims);
+        for (int i = 0; i < dims; i++) {
+            result.coords[i] = this.coords[i] + s;
+        }
+        return result;
+    }
+
+    /**
+     * Mathematically illegal, but shorthand for "add s to every element."
+     * @param s
+     * @return 
+     */
+    public NVector plusSIP(double s) {
+        for (int i = 0; i < dims; i++) {
+            coords[i] += s;
+        }
+        return this;
+    }
+    
     public static double lrDot(NVector l, NVector r) {
         double result = 0;
         for (int i = 0; i < l.dims; i++) {

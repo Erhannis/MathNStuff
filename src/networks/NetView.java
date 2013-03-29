@@ -54,14 +54,16 @@ public class NetView extends JPanel {
     public boolean hideFakeEdgeMirrors = false;
     public boolean hideNonFakeEdges = false;
     public boolean hideNonFakePairs = false;
-    public boolean showEdgeCapacities = true;
-    public boolean showEdgeCosts = true;
+    public boolean showEdgeCapacities = false;
+    public boolean showEdgeCosts = false;
+    public boolean showAsOneWay = false;
+    public boolean showNodes = true;
 
     public NetView(Network network) {
         this.network = network;
         this.setFocusable(true);
     }
-    
+
     public Color alterColorIfHighlighted(Edge e, Color c) {
         if (highlightedEdges.contains(e)) {
             return c.brighter();
@@ -86,7 +88,9 @@ public class NetView extends JPanel {
         double tOffset = fMetrics.getHeight() / 4.0;
         for (Node n : network.nodes) {
             //TODO Optimize this.
-            g.draw(new Ellipse2D.Double(n.x - 4, n.y - 4, 8, 8));
+            if (showNodes) {
+                g.draw(new Ellipse2D.Double(n.x - 4, n.y - 4, 8, 8));
+            }
             for (Edge e : n.edgesOut) {
                 if (hideFakeEdges && e.capacity == 0) {
                     continue;
@@ -109,23 +113,36 @@ public class NetView extends JPanel {
                 }
                 double dx = ((c.y - n.y) / norm);
                 double dy = ((n.x - c.x) / norm);
-                g.setColor(alterColorIfHighlighted(e, COLOR_CONNECTION));
-                g.draw(new java.awt.geom.Line2D.Double(n.x + dx, n.y + dy, c.x + dx, c.y + dy));
-                double mx = (c.x - n.x) / 5;
-                double my = (c.y - n.y) / 5;
-                g.setColor(alterColorIfHighlighted(e, COLOR_CONNECTION_DIR));
-                g.draw(new java.awt.geom.Line2D.Double(c.x + dx - mx, c.y + dy - my, c.x + dx, c.y + dy));
-                //g.drawString(Integer.toString(e.capacity), (float)n.x, (float)(n.y + tOffset));
-                //g.drawString(Integer.toString(e.capacity), (float)n.x, (float)n.y);
-                if (showEdgeCapacities) {
-                    g.setColor(alterColorIfHighlighted(e, COLOR_CONNECTION_CAPACITY));
-                    g.drawString(Integer.toString(e.capacity), (float)((((3 * n.x) + c.x) / 4.0) + (10 * dx) - (fMetrics.stringWidth(Integer.toString(e.capacity))) / 2.0), (float)((((3 * n.y) + c.y) / 4.0) + (10 * dy) + tOffset));
+                if (showAsOneWay) {
+                    g.setColor(alterColorIfHighlighted(e, COLOR_CONNECTION));
+                    g.draw(new java.awt.geom.Line2D.Double(n.x, n.y, c.x, c.y));
+                    if (showEdgeCapacities) {
+                        g.setColor(alterColorIfHighlighted(e, COLOR_CONNECTION_CAPACITY));
+                        g.drawString(Integer.toString(e.capacity), (float) ((((3 * n.x) + c.x) / 4.0) + (10 * dx) - (fMetrics.stringWidth(Integer.toString(e.capacity))) / 2.0), (float) ((((3 * n.y) + c.y) / 4.0) + (10 * dy) + tOffset));
+                    }
+                    if (showEdgeCosts) {
+                        g.setColor(alterColorIfHighlighted(e, COLOR_CONNECTION_COST));
+                        g.drawString(Integer.toString(e.cost), (float) ((((3 * n.x) + (2 * c.x)) / 5.0) + (10 * dx) - (fMetrics.stringWidth(Integer.toString(e.capacity))) / 2.0), (float) ((((3 * n.y) + (2 * c.y)) / 5.0) + (10 * dy) + tOffset));
+                    }
+                } else {
+                    g.setColor(alterColorIfHighlighted(e, COLOR_CONNECTION));
+                    g.draw(new java.awt.geom.Line2D.Double(n.x + dx, n.y + dy, c.x + dx, c.y + dy));
+                    double mx = (c.x - n.x) / 5;
+                    double my = (c.y - n.y) / 5;
+                    g.setColor(alterColorIfHighlighted(e, COLOR_CONNECTION_DIR));
+                    g.draw(new java.awt.geom.Line2D.Double(c.x + dx - mx, c.y + dy - my, c.x + dx, c.y + dy));
+                    //g.drawString(Integer.toString(e.capacity), (float)n.x, (float)(n.y + tOffset));
+                    //g.drawString(Integer.toString(e.capacity), (float)n.x, (float)n.y);
+                    if (showEdgeCapacities) {
+                        g.setColor(alterColorIfHighlighted(e, COLOR_CONNECTION_CAPACITY));
+                        g.drawString(Integer.toString(e.capacity), (float) ((((3 * n.x) + c.x) / 4.0) + (10 * dx) - (fMetrics.stringWidth(Integer.toString(e.capacity))) / 2.0), (float) ((((3 * n.y) + c.y) / 4.0) + (10 * dy) + tOffset));
 //                    g.drawString(Integer.toString(e.capacity), (float)((((3 * c.x) + n.x) / 4.0) + (10 * dx) - (fMetrics.stringWidth(Integer.toString(e.capacity))) / 2.0), (float)((((3 * c.y) + n.y) / 4.0) + (10 * dy) + tOffset));
-                }
-                if (showEdgeCosts) {
-                    g.setColor(alterColorIfHighlighted(e, COLOR_CONNECTION_COST));
-                    g.drawString(Integer.toString(e.cost), (float)((((3 * n.x) + (2 * c.x)) / 5.0) + (10 * dx) - (fMetrics.stringWidth(Integer.toString(e.capacity))) / 2.0), (float)((((3 * n.y) + (2 * c.y)) / 5.0) + (10 * dy) + tOffset));
+                    }
+                    if (showEdgeCosts) {
+                        g.setColor(alterColorIfHighlighted(e, COLOR_CONNECTION_COST));
+                        g.drawString(Integer.toString(e.cost), (float) ((((3 * n.x) + (2 * c.x)) / 5.0) + (10 * dx) - (fMetrics.stringWidth(Integer.toString(e.capacity))) / 2.0), (float) ((((3 * n.y) + (2 * c.y)) / 5.0) + (10 * dy) + tOffset));
 //                    g.drawString(Integer.toString(e.capacity), (float)((((3 * c.x) + n.x) / 4.0) + (10 * dx) - (fMetrics.stringWidth(Integer.toString(e.capacity))) / 2.0), (float)((((3 * c.y) + n.y) / 4.0) + (10 * dy) + tOffset));
+                    }
                 }
             }
             g.setColor(COLOR_NODE);
@@ -152,7 +169,6 @@ public class NetView extends JPanel {
 //        network.nodes.add(node);
 
         this.addMouseWheelListener(new MouseWheelListener() {
-
             public void mouseWheelMoved(MouseWheelEvent e) {
                 double factor = Math.pow(SCALE_BASE, PRESCALE_FACTOR * e.getWheelRotation());
                 xScale *= factor;
@@ -163,7 +179,6 @@ public class NetView extends JPanel {
             }
         });
         this.addMouseListener(new MouseListener() {
-
             public void mouseClicked(MouseEvent e) {
                 if (e.getButton() == MouseEvent.BUTTON1) {
                     double clickX = (e.getX() - xTrans) / xScale;
@@ -208,7 +223,6 @@ public class NetView extends JPanel {
                     JMenuItem mitemToggleConnection = new JMenuItem("Toggle Connection");
                     JMenuItem mitemRemoveNode = new JMenuItem("Remove");
                     mitemToggleConnection.addActionListener(new ActionListener() {
-
                         public void actionPerformed(ActionEvent event) {
                             Object[] nodes = selected.toArray();
                             if (((Node) nodes[0]).connections.contains(nodes[1])) {
@@ -260,7 +274,6 @@ public class NetView extends JPanel {
                     });
 
                     mitemRemoveNode.addActionListener(new ActionListener() {
-
                         public void actionPerformed(ActionEvent e) {
                             for (Node n : selected) {
                                 for (Node c : network.nodes) {
@@ -314,7 +327,6 @@ public class NetView extends JPanel {
             }
         });
         this.addMouseMotionListener(new MouseMotionListener() {
-
             public void mouseDragged(MouseEvent e) {
                 xTrans += e.getX() - mouseWasX;
                 yTrans += e.getY() - mouseWasY;
@@ -445,5 +457,10 @@ public class NetView extends JPanel {
             public void keyReleased(KeyEvent ke) {
             }
         });
+    }
+
+    public void centerOnOrigin() {
+        xTrans = this.getWidth() / 2.0;
+        yTrans = this.getHeight() / 2.0;
     }
 }
