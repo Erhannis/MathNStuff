@@ -7,10 +7,8 @@ package mathnstuff;
 
 
 import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Random;
-import networks.Edge;
-import networks.Network;
-import networks.Node;
 
 /**
  *
@@ -318,5 +316,29 @@ public class MeUtils {
             sb.append(array.toString());
         }
         return sb;
+    }
+    
+    /**
+     * array must contain at least one object, and all the others should
+     * be of the same type as the first.  It should also be of only one
+     * dimension, at this point.
+     * @param array
+     * @return 
+     */
+    public static Object objectArrayToTArray(Object[] array) {
+        if (array == null || array.length == 0) {
+            return null;
+        }
+        Class<?> c = null;
+        for (int i = 0; i < array.length; i++) {
+            if (array[i] != null) {
+                c = array[i].getClass();
+            }
+        }
+        Object result = java.lang.reflect.Array.newInstance(c, array.length);
+        for (int i = 0; i < array.length; i++) {
+            ((Object[])result)[i] = array[i];
+        }
+        return result;
     }
 }
