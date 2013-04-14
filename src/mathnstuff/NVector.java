@@ -510,4 +510,32 @@ public class NVector {
         }
         return true;
     }
+    
+    public Matrix outerProduct(NVector b) {
+        Matrix result = new Matrix(b.dims, this.dims);
+        for (int x = 0; x < b.dims; x++) {
+            for (int y = 0; y < this.dims; y++) {
+                result.val[x][y] = b.coords[x] * this.coords[y];
+            }
+        }
+        return result;
+    }
+
+    public Matrix outerProductWCache(NVector b) {
+        Matrix result = Matrix.getCachedMatrix(b.dims, this.dims, false);
+        for (int x = 0; x < b.dims; x++) {
+            for (int y = 0; y < this.dims; y++) {
+                result.val[x][y] = b.coords[x] * this.coords[y];
+            }
+        }
+        return result;
+    }
+    
+    public double dot(NVector v) {
+        double result = 0;
+        for (int i = 0; i < this.dims; i++) {
+            result += this.coords[i] * v.coords[i];
+        }
+        return result;
+    }    
 }

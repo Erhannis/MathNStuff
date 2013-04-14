@@ -446,6 +446,10 @@ public class NetView extends JPanel {
                         highlightedEdges.clear();
                         repaintWV();
                         break;
+                    case 'o':
+                        showNodes = !showNodes;
+                        repaintWV();
+                        break;
                     default:
                         break;
                 }

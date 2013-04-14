@@ -10,6 +10,8 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -379,9 +381,10 @@ public class Matrix implements Streamable {
                     }
                     if (!found) {
                         // Maybe I should error here.  We'll leave it, for now.
-                        System.err.println("Matrix can't be left-identity.");
-                        System.err.println(this);
-                        System.err.println();
+                        throw new RuntimeException("Matrix can't be left-identity.\n" + this.toString());
+//                        System.err.println("Matrix can't be left-identity.");
+//                        System.err.println(this);
+//                        System.err.println();
                     }
                 }
                 for (int col = row + 1; col < cols; col++) {
@@ -572,6 +575,15 @@ public class Matrix implements Streamable {
         return result;
     }
 
+    public Matrix multM(Matrix m) {
+        try {
+            return Matrix.lrMult(this, m);
+        } catch (Exception ex) {
+            Logger.getLogger(Matrix.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+    
     public static Matrix lrMultWCache(Matrix l, Matrix r) throws Exception {
         if (l.cols != r.rows) {
             throw new Exception("Dims don't match for multiplication!");
@@ -615,6 +627,10 @@ public class Matrix implements Streamable {
         Matrix[] split = Matrix.lrSplit(joined);
         return split[1];
     }
+    
+    public Matrix invert() throws Exception {
+        return Matrix.invert(this);
+    }
 
     public static NVector lrvMult(Matrix l, NVector r) throws Exception {
         if (l.cols != r.dims) {
@@ -630,6 +646,15 @@ public class Matrix implements Streamable {
         }
         return result;
     }
+    
+    public NVector multV(NVector v) {
+        try {
+            return Matrix.lrvMult(this, v);
+        } catch (Exception ex) {
+            Logger.getLogger(Matrix.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }    
 
     /**
      * This attempts to figure out what the coordinates of each vector are
@@ -946,6 +971,45 @@ public class Matrix implements Streamable {
         return result;
     }
 
+    public Matrix transpose() {
+        Matrix result = new Matrix(this.rows, this.cols);
+        for (int i = 0; i < this.cols; i++) {
+            for (int j = 0; j < this.rows; j++) {
+                result.val[j][i] = this.val[i][j];
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Please note that this still allocates a new Matrix.
+     * @return 
+     */
+    public Matrix transposeIP() {
+        Matrix result = new Matrix(this.rows, this.cols);
+        for (int i = 0; i < this.cols; i++) {
+            for (int j = 0; j < this.rows; j++) {
+                result.val[j][i] = this.val[i][j];
+            }
+        }
+        this.cols = result.cols;
+        this.rows = result.rows;
+        this.val = result.val;
+        this.doneWithMatrix();
+        this.usedCached = -1;
+        return result;
+    }
+
+    public Matrix transposeWCache() {
+        Matrix result = Matrix.getCachedMatrix(this.rows, this.cols, false);
+        for (int i = 0; i < this.cols; i++) {
+            for (int j = 0; j < this.rows; j++) {
+                result.val[j][i] = this.val[i][j];
+            }
+        }
+        return result;
+    }
+    
     public static Matrix transpose(Matrix m) {
         Matrix result = new Matrix(m.rows, m.cols);
         for (int i = 0; i < m.cols; i++) {
@@ -1082,6 +1146,123 @@ public class Matrix implements Streamable {
         return lDir.multS(t).plusB(lPos);
     }
 
+    /**
+     * The two matrices are assumed to be equal dimensions, without checking.
+     * @param m
+     * @return 
+     */
+    public Matrix minusM(Matrix m) {
+        Matrix result = new Matrix(cols, rows);
+        for (int x = 0; x < cols; x++) {
+            for (int y = 0; y < rows; y++) {
+                result.val[x][y] = this.val[x][y] - m.val[x][y];
+            }
+        }
+        return result;
+    }
+    
+    /**
+     * The two matrices are assumed to be equal dimensions, without checking.
+     * @param m
+     * @return 
+     */
+    public Matrix minusMWCache(Matrix m) {
+        Matrix result = Matrix.getCachedMatrix(cols, rows, false);
+        for (int x = 0; x < cols; x++) {
+            for (int y = 0; y < rows; y++) {
+                result.val[x][y] = this.val[x][y] - m.val[x][y];
+            }
+        }
+        return result;
+    }
+
+    /**
+     * The two matrices are assumed to be equal dimensions, without checking.
+     * @param m
+     * @return 
+     */
+    public Matrix minusMIP(Matrix m) {
+        for (int x = 0; x < cols; x++) {
+            for (int y = 0; y < rows; y++) {
+                this.val[x][y] -= m.val[x][y];
+            }
+        }
+        return this;
+    }
+
+    /**
+     * The two matrices are assumed to be equal dimensions, without checking.
+     * @param m
+     * @return 
+     */
+    public Matrix plusM(Matrix m) {
+        Matrix result = new Matrix(cols, rows);
+        for (int x = 0; x < cols; x++) {
+            for (int y = 0; y < rows; y++) {
+                result.val[x][y] = this.val[x][y] + m.val[x][y];
+            }
+        }
+        return result;
+    }
+    
+    /**
+     * The two matrices are assumed to be equal dimensions, without checking.
+     * @param m
+     * @return 
+     */
+    public Matrix plusMWCache(Matrix m) {
+        Matrix result = Matrix.getCachedMatrix(cols, rows, false);
+        for (int x = 0; x < cols; x++) {
+            for (int y = 0; y < rows; y++) {
+                result.val[x][y] = this.val[x][y] + m.val[x][y];
+            }
+        }
+        return result;
+    }
+
+    /**
+     * The two matrices are assumed to be equal dimensions, without checking.
+     * @param m
+     * @return 
+     */
+    public Matrix plusMIP(Matrix m) {
+        for (int x = 0; x < cols; x++) {
+            for (int y = 0; y < rows; y++) {
+                this.val[x][y] += m.val[x][y];
+            }
+        }
+        return this;
+    }
+    
+    public Matrix multS(double s) {
+        Matrix result = new Matrix(cols, rows);
+        for (int x = 0; x < cols; x++) {
+            for (int y = 0; y < rows; y++) {
+                result.val[x][y] = this.val[x][y] * s;
+            }
+        }
+        return result;
+    }
+
+    public Matrix multSWCache(double s) {
+        Matrix result = Matrix.getCachedMatrix(cols, rows, false);
+        for (int x = 0; x < cols; x++) {
+            for (int y = 0; y < rows; y++) {
+                result.val[x][y] = this.val[x][y] * s;
+            }
+        }
+        return result;
+    }
+    
+    public Matrix multSIP(double s) {
+        for (int x = 0; x < cols; x++) {
+            for (int y = 0; y < rows; y++) {
+                this.val[x][y] *= s;
+            }
+        }
+        return this;
+    }
+    
     @Override
     protected void finalize() throws Throwable {
 

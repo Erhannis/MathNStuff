@@ -7,6 +7,9 @@ package mathnstuff;
 
 
 import java.util.ArrayList;
+import networks.Edge;
+import networks.Network;
+import networks.Node;
 
 /**
  *
@@ -78,5 +81,151 @@ public class MeMath {
     public static double[] rectangularToRadial(double[] xyXY) {
         double r = Math.sqrt((xyXY[0] * xyXY[0]) + (xyXY[1] * xyXY[1]));
         return new double[]{r, Math.atan2(xyXY[1], xyXY[0]), (((xyXY[1] * xyXY[3]) + (xyXY[0] * xyXY[2])) / r), (((xyXY[0] * xyXY[3]) - (xyXY[1] * xyXY[2])) / (r*r))};
+    }
+    
+    public static final double DEFAULT_DELTA_X = 1e-8;
+    
+    /**
+     * dim starts at 0.
+     * @param f
+     * @param dim
+     * @return 
+     */
+    public static DoubleFunction roughPartial(final DoubleFunction f, final int dim, final double h) {
+        return new DoubleFunction() {
+            @Override
+            public double evaluate(NVector x) {
+                NVector xph = x.copy();
+                xph.coords[dim] += h;
+                return (f.evaluate(xph) - f.evaluate(x)) / h;
+            }
+        };
+    }
+
+    /**
+     * dim starts at 0.
+     * @param f
+     * @param dim
+     * @return 
+     */
+    public static DoubleFunction roughPartial(final DoubleFunction f, final int dim) {
+        return new DoubleFunction() {
+            @Override
+            public double evaluate(NVector x) {
+                NVector xph = x.copy();
+                xph.coords[dim] += DEFAULT_DELTA_X;
+                return (f.evaluate(xph) - f.evaluate(x)) / DEFAULT_DELTA_X;
+            }
+        };
+    }
+    
+    public static Function<NVector> roughGradient(final DoubleFunction f, final int dims, final double h) {
+        final DoubleFunction[] dfs = new DoubleFunction[dims];
+        for (int i = 0; i < dims; i++) {
+            dfs[i] = roughPartial(f, i, h);
+        }
+        return new Function<NVector>() {
+            @Override
+            public NVector evaluate(NVector x) {
+                NVector result = new NVector(dims);
+                for (int i = 0; i < dims; i++) {
+                    result.coords[i] = dfs[i].evaluate(x);
+                }
+                return result;
+            }
+        };
+    }
+    
+    public static Function<NVector> roughGradient(final DoubleFunction f, final int dims) {
+        return roughGradient(f, dims, DEFAULT_DELTA_X);
+    }
+    
+    public static Network netplotDFunction(DoubleFunction df, int points, double xMin, double xMax, double xScaling, double yScaling) {
+        Network net = new Network();
+        double xStep;
+        if (points > 1) {
+            xStep = (xMax - xMin) / (points - 1);
+        } else {
+            xStep = 1;
+        }
+        double x = xMin;
+        Node prev = null;
+        NVector xv = new NVector(new double[]{x});
+        for (int i = 0; i < points; i++, x += xStep) {
+            xv.coords[0] = x;
+            Node newNode = new Node(i, x * xScaling, df.evaluate(xv) * -yScaling);
+            net.nodes.add(newNode);
+            if (prev != null) {
+                Edge newEdge = new Edge(prev, newNode, 0, 0);
+                net.edges.add(newEdge);
+                prev.connections.add(newNode);
+                prev.edgesOut.add(newEdge);
+                newNode.edgesIn.add(newEdge);
+            }
+            prev = newNode;
+        }
+        return net;
+    }
+    
+    public static RToRFunction roughDerivative(final RToRFunction f, final double h) {
+        return new RToRFunction() {
+            @Override
+            public double evaluate(double x) {
+                double xh = x;
+                xh += h;
+                return (f.evaluate(xh) - f.evaluate(x)) / h;
+            }
+        };
+    }
+
+    public static RToRFunction roughDerivative(final RToRFunction f) {
+        return new RToRFunction() {
+            @Override
+            public double evaluate(double x) {
+                double xh = x;
+                xh += DEFAULT_DELTA_X;
+                return (f.evaluate(xh) - f.evaluate(x)) / DEFAULT_DELTA_X;
+            }
+        };
+    }
+
+    public static Network netplotVectorField(Function<NVector> f, int xpoints, int ypoints, double xMin, double xMax, double yMin, double yMax, double xScaling, double yScaling, double xVScaling, double yVScaling) {
+        Network net = new Network();
+        double xStep;
+        if (xpoints > 1) {
+            xStep = (xMax - xMin) / (xpoints - 1);
+        } else {
+            xStep = 1;
+        }
+        double yStep;
+        if (ypoints > 1) {
+            yStep = (yMax - yMin) / (ypoints - 1);
+        } else {
+            yStep = 1;
+        }
+        double x = xMin;
+        double y = yMin;
+        NVector xyv = new NVector(new double[]{x, y});
+        x = xMin;
+        for (int i = 0; i < xpoints; i++) {
+            y = yMin;
+            for (int j = 0; j < ypoints; j++) {
+                xyv.coords[0] = x;
+                xyv.coords[1] = y;
+                Node base = new Node(i, x * xScaling, y * -yScaling);
+                NVector v = f.evaluate(xyv);
+                Node arrowtip = new Node(i, ((x * xScaling) + (v.coords[0] * xVScaling)), ((y * -yScaling) + (v.coords[1] * -yVScaling)));
+                net.nodes.add(base);
+                net.nodes.add(arrowtip);
+                Edge newEdge = new Edge(base, arrowtip, 0, 0);
+                net.edges.add(newEdge);
+                base.connections.add(base);
+                base.edgesOut.add(newEdge);
+                base.edgesIn.add(newEdge);
+                y += yStep;
+            }
+            x += xStep;
+        }
+        return net;
     }
 }
