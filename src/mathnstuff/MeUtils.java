@@ -341,4 +341,22 @@ public class MeUtils {
         }
         return result;
     }
+    
+    public static String multiplyString(String s, int num) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < num; i++) {
+            sb.append(s);
+        }
+        return sb.toString();
+    }
+
+    public static String multiplyString(String s, double num) {
+        StringBuilder sb = new StringBuilder();
+        int leftover = ((int)(s.length() * num)) % s.length();
+        for (int i = 0; i < num; i++) {
+            sb.append(s);
+        }
+        sb.append(s.substring(0, leftover));
+        return sb.toString();
+    }
 }
