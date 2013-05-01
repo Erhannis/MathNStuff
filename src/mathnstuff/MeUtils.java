@@ -359,4 +359,115 @@ public class MeUtils {
         sb.append(s.substring(0, leftover));
         return sb.toString();
     }
+    
+    public static String bytesToHex(byte[] bytes) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < bytes.length; i++) {
+            char a = '0';
+            switch (bytes[i] & 0xF0) {
+                case 0x00:
+                    a = '0';
+                    break;
+                case 0x10:
+                    a = '1';
+                    break;
+                case 0x20:
+                    a = '2';
+                    break;
+                case 0x30:
+                    a = '3';
+                    break;
+                case 0x40:
+                    a = '4';
+                    break;
+                case 0x50:
+                    a = '5';
+                    break;
+                case 0x60:
+                    a = '6';
+                    break;
+                case 0x70:
+                    a = '7';
+                    break;
+                case 0x80:
+                    a = '8';
+                    break;
+                case 0x90:
+                    a = '9';
+                    break;
+                case 0xA0:
+                    a = 'A';
+                    break;
+                case 0xB0:
+                    a = 'B';
+                    break;
+                case 0xC0:
+                    a = 'C';
+                    break;
+                case 0xD0:
+                    a = 'D';
+                    break;
+                case 0xE0:
+                    a = 'E';
+                    break;
+                case 0xF0:
+                    a = 'F';
+                    break;
+            }
+            char b = '0';
+            switch (bytes[i] & 0x0F) {
+                case 0x00:
+                    b = '0';
+                    break;
+                case 0x01:
+                    b = '1';
+                    break;
+                case 0x02:
+                    b = '2';
+                    break;
+                case 0x03:
+                    b = '3';
+                    break;
+                case 0x04:
+                    b = '4';
+                    break;
+                case 0x05:
+                    b = '5';
+                    break;
+                case 0x06:
+                    b = '6';
+                    break;
+                case 0x07:
+                    b = '7';
+                    break;
+                case 0x08:
+                    b = '8';
+                    break;
+                case 0x09:
+                    b = '9';
+                    break;
+                case 0x0A:
+                    b = 'A';
+                    break;
+                case 0x0B:
+                    b = 'B';
+                    break;
+                case 0x0C:
+                    b = 'C';
+                    break;
+                case 0x0D:
+                    b = 'D';
+                    break;
+                case 0x0E:
+                    b = 'E';
+                    break;
+                case 0x0F:
+                    b = 'F';
+                    break;
+            }
+            sb.append(a);
+            sb.append(b);
+        }
+        return sb.toString();
+    }
 }
