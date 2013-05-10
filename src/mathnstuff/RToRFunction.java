@@ -8,6 +8,6 @@ package mathnstuff;
  *
  * @author erhannis
  */
-public interface RToRFunction {
-    public double evaluate(double x);
+public abstract class RToRFunction {
+    public abstract double evaluate(double x);
 }
