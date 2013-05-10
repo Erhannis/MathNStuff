@@ -228,4 +228,139 @@ public class MeMath {
         }
         return net;
     }
+
+    public static String graph(int[] data, boolean fillLines) {
+        StringBuilder sb = new StringBuilder();
+        if (fillLines) {
+            for (int i = 0; i < data.length; i++) {
+                sb.append("|" + MeUtils.multiplyString("*", data[i]) + "\n");
+            }
+        } else {
+            for (int i = 0; i < data.length; i++) {
+                if (data[i] > 0) {
+                    sb.append("|" + MeUtils.multiplyString(" ", data[i] - 1) + "*\n");
+                } else {
+                    sb.append("|\n");
+                }
+            }
+        }
+        return sb.toString();
+    }
+    
+    public static String graph(RToRFunction f, double min, double max, double scale, int points) {
+        int[] data = new int[points];
+        for (int i = 0; i < points; i++) {
+            data[i] = ((int)(f.evaluate(((i * (max - min)) / (points - 1)) + min) * scale));
+        }
+        return graph(data, false);
+    }
+    
+    public static String histogram(double[] data, double min, double max, int bins, int width, boolean catchTails) {
+        int[] histogram = new int[bins];
+        for (int i = 0; i < data.length; i++) {
+            double p = ((data[i] - min) / (max - min));
+            if (p < 1) {
+                if (p >= 0) {
+                    histogram[(int) (p * bins)]++;
+                } else if (catchTails) {
+                    histogram[0]++;
+                }
+            } else if (p == 1 || catchTails) {
+                histogram[bins - 1]++;
+            }
+        }
+        int maxval = 0;
+        for (int i = 0; i < bins; i++) {
+            if (histogram[i] > maxval) {
+                maxval = histogram[i];
+            }
+        }
+        for (int i = 0; i < bins; i++) {
+            histogram[i] *= width;
+            histogram[i] /= maxval;
+        }
+        return graph(histogram, true);
+    }
+    
+    public static String rotateCCW(String s) {
+        int maxLen = 0;
+        int curLen = 0;
+        int lines = 0;
+        for (int i = 0; i < s.length(); i++) {
+            if (s.charAt(i) == '\n') {
+                curLen = 0;
+                lines++;
+            } else {
+                curLen++;
+                if (curLen > maxLen) {
+                    maxLen = curLen;
+                }
+            }
+        }
+        char[][] chars = new char[maxLen][lines];
+        for (int y = 0; y < lines; y++) {
+            for (int x = 0; x < maxLen; x++) {
+                chars[x][y] = ' ';
+            }
+        }
+        int lineIndex = 0;
+        int colIndex = 0;
+        for (int i = 0; i < s.length(); i++) {
+            if (s.charAt(i) == '\n') {
+                colIndex = 0;
+                lineIndex++;
+            } else {
+                chars[colIndex][lineIndex] = s.charAt(i);
+                colIndex++;                
+            }
+        }
+        StringBuilder sb = new StringBuilder();
+        for (int x = maxLen - 1; x >= 0; x--) {
+            for (int y = 0; y < lines; y++) {
+                sb.append(chars[x][y]);
+            }
+        }
+        return sb.toString();
+    }
+
+    public static String rotateCW(String s) {
+        int maxLen = 0;
+        int curLen = 0;
+        int lines = 0;
+        for (int i = 0; i < s.length(); i++) {
+            if (s.charAt(i) == '\n') {
+                curLen = 0;
+                lines++;
+            } else {
+                curLen++;
+                if (curLen > maxLen) {
+                    maxLen = curLen;
+                }
+            }
+        }
+        char[][] chars = new char[maxLen][lines];
+        for (int y = 0; y < lines; y++) {
+            for (int x = 0; x < maxLen; x++) {
+                chars[x][y] = ' ';
+            }
+        }
+        int lineIndex = 0;
+        int colIndex = 0;
+        for (int i = 0; i < s.length(); i++) {
+            if (s.charAt(i) == '\n') {
+                colIndex = 0;
+                lineIndex++;
+            } else {
+                chars[colIndex][lineIndex] = s.charAt(i);
+                colIndex++;                
+            }
+        }
+        StringBuilder sb = new StringBuilder();
+        for (int x = 0; x < maxLen; x++) {
+            for (int y = lines - 1; y >= 0; y--) {
+                sb.append(chars[x][y]);
+            }
+        }
+        return sb.toString();
+    }
 }
