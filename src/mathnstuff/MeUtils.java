@@ -470,4 +470,86 @@ public class MeUtils {
         }
         return sb.toString();
     }
+
+    public static String rotateCCW(String s) {
+        int maxLen = 0;
+        int curLen = 0;
+        int lines = 0;
+        for (int i = 0; i < s.length(); i++) {
+            if (s.charAt(i) == '\n') {
+                curLen = 0;
+                lines++;
+            } else {
+                curLen++;
+                if (curLen > maxLen) {
+                    maxLen = curLen;
+                }
+            }
+        }
+        char[][] chars = new char[maxLen][lines];
+        for (int y = 0; y < lines; y++) {
+            for (int x = 0; x < maxLen; x++) {
+                chars[x][y] = ' ';
+            }
+        }
+        int lineIndex = 0;
+        int colIndex = 0;
+        for (int i = 0; i < s.length(); i++) {
+            if (s.charAt(i) == '\n') {
+                colIndex = 0;
+                lineIndex++;
+            } else {
+                chars[colIndex][lineIndex] = s.charAt(i);
+                colIndex++;                
+            }
+        }
+        StringBuilder sb = new StringBuilder();
+        for (int x = maxLen - 1; x >= 0; x--) {
+            for (int y = 0; y < lines; y++) {
+                sb.append(chars[x][y]);
+            }
+        }
+        return sb.toString();
+    }
+
+    public static String rotateCW(String s) {
+        int maxLen = 0;
+        int curLen = 0;
+        int lines = 0;
+        for (int i = 0; i < s.length(); i++) {
+            if (s.charAt(i) == '\n') {
+                curLen = 0;
+                lines++;
+            } else {
+                curLen++;
+                if (curLen > maxLen) {
+                    maxLen = curLen;
+                }
+            }
+        }
+        char[][] chars = new char[maxLen][lines];
+        for (int y = 0; y < lines; y++) {
+            for (int x = 0; x < maxLen; x++) {
+                chars[x][y] = ' ';
+            }
+        }
+        int lineIndex = 0;
+        int colIndex = 0;
+        for (int i = 0; i < s.length(); i++) {
+            if (s.charAt(i) == '\n') {
+                colIndex = 0;
+                lineIndex++;
+            } else {
+                chars[colIndex][lineIndex] = s.charAt(i);
+                colIndex++;                
+            }
+        }
+        StringBuilder sb = new StringBuilder();
+        for (int x = 0; x < maxLen; x++) {
+            for (int y = lines - 1; y >= 0; y--) {
+                sb.append(chars[x][y]);
+            }
+        }
+        return sb.toString();
+    }
 }
