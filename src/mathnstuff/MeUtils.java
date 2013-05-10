@@ -508,6 +508,9 @@ public class MeUtils {
             for (int y = 0; y < lines; y++) {
                 sb.append(chars[x][y]);
             }
+            if (x > 0) {
+                sb.append("\n");
+            }
         }
         return sb.toString();
     }
@@ -548,6 +551,9 @@ public class MeUtils {
         for (int x = 0; x < maxLen; x++) {
             for (int y = lines - 1; y >= 0; y--) {
                 sb.append(chars[x][y]);
+            }
+            if (x < maxLen - 1) {
+                sb.append("\n");
             }
         }
         return sb.toString();
