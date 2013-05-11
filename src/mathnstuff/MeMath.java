@@ -44,6 +44,9 @@ public class MeMath {
     }
     
     public static long factorial(int a) {
+        if (a <= 0) {
+            return 1;
+        }
         long product = a;
         for (int i = a - 1; i > 1; i--) {
             product *= i;
@@ -280,5 +283,48 @@ public class MeMath {
             histogram[i] /= maxval;
         }
         return graph(histogram, true);
+    }
+    
+    /**
+     * I'll make this generic later.
+     * @return 
+     */
+    public static double max(double[] array) {
+        double max = Double.NEGATIVE_INFINITY;
+        for (int i = 0; i < array.length; i++) {
+            if (array[i] > max) {
+                max = array[i];
+            }
+        }
+        return max;
+    }
+    
+    /**
+     * Really only accurate within [-2,2].
+     * @param x
+     * @param n
+     * @return 
+     */
+    public static final double erf(double x, int n) {
+        double sum = 0;
+        for (int i = 0; i < n; i++) {
+            if (i % 2 == 0) {
+                // Add
+                sum += (Math.pow(x, (2 * i) + 1) / (factorial(i) * ((2 * i) + 1)));
+            } else {
+                // Subtract
+                sum -= (Math.pow(x, (2 * i) + 1) / (factorial(i) * ((2 * i) + 1)));
+            }
+        }
+        return (2 / Math.sqrt(Math.PI)) * sum;   
+    }
+
+    /**
+     * Really only accurate within [-2,2].
+     * @param x
+     * @return 
+     */
+    public static final double erf(double x) {
+        return erf(x, 20);
     }
 }
