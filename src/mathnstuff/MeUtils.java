@@ -8,6 +8,8 @@ package mathnstuff;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.Random;
 
 /**
@@ -15,6 +17,10 @@ import java.util.Random;
  * @author erhannis
  */
 public class MeUtils {
+    public static final String COLOR_BLUE = ((char)0x1B) + "[34m";
+    public static final String COLOR_RED = ((char)0x1B) + "[31m";
+    public static final String COLOR_GREEN = ((char)0x1B) + "[32m";
+    public static final String COLOR_RESET = ((char)0x1B) + "[0m";
 
     public static Object concatArrays(Object... arrays) {
         int length = 0;
@@ -557,5 +563,14 @@ public class MeUtils {
             }
         }
         return sb.toString();
+    }
+    
+    public static Object getRandomElement(Collection c, Random r) {
+        int i = r.nextInt(c.size());
+        Iterator it = c.iterator();
+        for (int j = 0; j < i; j++) {
+            it.next();
+        }
+        return it.next();
     }
 }
