@@ -51,6 +51,12 @@ public abstract class QueueStream {
             }
             return dual.queue.remove();
         }
+
+        @Override
+        public void close() throws IOException {
+            super.close();
+            dual.close();
+        }
     }
 
     public static class QueueOutputStream extends OutputStream {
