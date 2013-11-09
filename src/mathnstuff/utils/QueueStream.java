@@ -12,37 +12,44 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
+ * This class contains two paired classes: and InputStream and an OutputStream.
+ * Creating one also creates its dual (the other end).  Writing to the
+ * QueueOutputStream adds bytes to the queue, which can be read by
  * @author mewer
  */
 public abstract class QueueStream {
     public static class QueueInputStream extends InputStream {
         public QueueOutputStream dual = null;
         
+        /**
+         * Don't forget to call close() on the dual!
+         */
         public QueueInputStream() {
             dual = new QueueOutputStream(this);
         }
         
-        public QueueInputStream(QueueOutputStream dual) {
+        protected QueueInputStream(QueueOutputStream dual) {
             this.dual = dual;
         }
 
         @Override
         public int read() throws IOException {
-            if (dual.open) {
-                while (dual.queue.isEmpty()) {
-                    synchronized (dual.queue) {
-                        try {
-                            dual.queue.wait();
-                        } catch (InterruptedException ex) {
-                            Logger.getLogger(QueueStream.class.getName()).log(Level.SEVERE, null, ex);
-                        }
+            while (dual.queue.isEmpty()) {
+                if (!dual.open) {
+                    return -1;
+                }
+                synchronized (dual.queue) {
+                    try {
+                        dual.queue.wait();
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(QueueStream.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
-                return dual.queue.remove();
-            } else {
-                return -1;
+                if (!dual.open) {
+                    return -1;
+                }
             }
+            return dual.queue.remove();
         }
     }
 
@@ -55,12 +62,15 @@ public abstract class QueueStream {
             open = true;
         }
         
+        /**
+         * Don't forget to call close()!
+         */
         public QueueOutputStream() {
             setup();
             this.dual = new QueueInputStream(this);
         }
 
-        public QueueOutputStream(QueueInputStream dual) {
+        protected QueueOutputStream(QueueInputStream dual) {
             setup();
             this.dual = dual;
         }
@@ -77,6 +87,9 @@ public abstract class QueueStream {
         public void close() throws IOException {
             super.close();
             open = false;
+            synchronized (queue) {
+                queue.notifyAll();
+            }
         }
     }
 }
