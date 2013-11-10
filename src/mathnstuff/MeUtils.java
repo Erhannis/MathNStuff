@@ -6,8 +6,10 @@ package mathnstuff;
  */
 
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.reflect.Array;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Random;
@@ -572,5 +574,17 @@ public class MeUtils {
             it.next();
         }
         return it.next();
+    }
+    
+    public static int colorBytesToInt(byte r, byte g, byte b, byte a) {
+        return (a * 0x01000000) + (r * 0x00010000) + (g * 0x00000100) + (b * 0x00000001);
+    }
+    
+    public static void pipeInputStreamToOutputStream(InputStream is, OutputStream os) throws IOException {
+        byte[] buf = new byte[256];
+        int wrote = 0;
+        while ((wrote = is.read(buf)) >= 0) {
+            os.write(buf, 0, wrote);
+        }
     }
 }
