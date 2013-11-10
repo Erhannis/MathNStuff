@@ -61,7 +61,7 @@ public abstract class QueueStream {
 
     public static class QueueOutputStream extends OutputStream {
         protected boolean open = true;
-        protected final ArrayDeque<Byte> queue = new ArrayDeque<Byte>();
+        protected final ArrayDeque<Integer> queue = new ArrayDeque<Integer>();
         public QueueInputStream dual = null;
         
         private void setup() {
@@ -84,7 +84,7 @@ public abstract class QueueStream {
         @Override
         public void write(int b) throws IOException {
             synchronized (queue) {
-                queue.push((byte)b);
+                queue.add(b & 0xFF);
                 queue.notifyAll();
             }
         }
