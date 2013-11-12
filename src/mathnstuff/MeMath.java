@@ -343,10 +343,63 @@ public class MeMath {
      * @return 
      */
     public static double[] crossProduct3d(double[] u, double[] v) {
-        double[] c = new double[3];
-        c[0] = u[1]*v[2] - u[2]*v[1];
-        c[1] = u[2]*v[0] - u[0]*v[2];
-        c[2] = u[0]*v[1] - u[1]*v[0];
-        return c;
+        double[] w = new double[3];
+        w[0] = u[1]*v[2] - u[2]*v[1];
+        w[1] = u[2]*v[0] - u[0]*v[2];
+        w[2] = u[0]*v[1] - u[1]*v[0];
+        return w;
+    }
+    
+    /**
+     * Arbitrary n.
+     * @param u 
+     */
+    public static void normalizeVectorIP(double[] u) {
+        double length = vectorLength(u);
+        if (length == 0) {
+            return;
+        }
+        for (int i = 0; i < u.length; i++) {
+            u[i] /= length;
+        }        
+    }
+    
+    /**
+     * Arbitrary n.
+     * @param u
+     * @param v
+     * @return 
+     */
+    public static double dotProduct(double[] u, double[] v) {
+        double sum = 0;
+        for (int i = 0; i < u.length; i++) {
+            sum += u[i] * v[i];
+        }
+        return sum;
+    }
+    
+    /**
+     * Arbitrary n.
+     * @param u
+     * @return 
+     */
+    public static double vectorLength(double[] u) {
+        return Math.sqrt(dotProduct(u, u));
+    }
+    
+    /**
+     * Arbitrary n.  Returns pi/2 if either vector has length 0.
+     * @param u
+     * @param v
+     * @return 
+     */
+    public static double vectorAngle(double[] u, double[] v) {
+        double uLen = vectorLength(u);
+        double vLen = vectorLength(v);
+        if (uLen == 0 || vLen == 0) {
+            return Math.PI / 2;
+        } else {
+            return Math.acos(dotProduct(u, v) / (uLen * vLen));
+        }
     }
 }
