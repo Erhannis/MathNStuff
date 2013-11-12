@@ -334,4 +334,19 @@ public class MeMath {
         }        
     }
     
+    /**
+     * Normally I'd like to make this generic for N dimensions, but it's useful
+     * enough like this that I don't care right now.  Assumes both input vectors
+     * have 3 elements.
+     * @param a
+     * @param b
+     * @return 
+     */
+    public static double[] crossProduct3d(double[] u, double[] v) {
+        double[] c = new double[3];
+        c[0] = u[1]*v[2] - u[2]*v[1];
+        c[1] = u[2]*v[0] - u[0]*v[2];
+        c[2] = u[0]*v[1] - u[1]*v[0];
+        return c;
+    }
 }
