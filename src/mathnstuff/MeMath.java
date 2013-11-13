@@ -402,4 +402,22 @@ public class MeMath {
             return Math.acos(dotProduct(u, v) / (uLen * vLen));
         }
     }
+    
+    /**
+     * Reflects vector u across a normal n.  Note that both u and its reflection
+     * are assumed to point outwards from the surface.  Crashes if |N|=0.
+     * @param u
+     * @param n
+     * @return 
+     */
+    public static double[] vectorReflect(double[] u, double[] n) {
+        double factor = 2 / vectorLength(n);
+        
+        double[] result = new double[u.length];
+        for (int i = 0; i < u.length; i++) {
+            result[i] = factor * n[i] * dotProduct(n, u) - u[i];
+        }
+        
+        return result;
+    }
 }
