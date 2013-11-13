@@ -354,7 +354,7 @@ public class MeMath {
      * Arbitrary n.
      * @param u 
      */
-    public static void normalizeVectorIP(double[] u) {
+    public static void vectorNormalizeIP(double[] u) {
         double length = vectorLength(u);
         if (length == 0) {
             return;
@@ -362,6 +362,23 @@ public class MeMath {
         for (int i = 0; i < u.length; i++) {
             u[i] /= length;
         }        
+    }
+
+    /**
+     * Arbitrary n.
+     * @param u 
+     */
+    public static double[] vectorNormalize(double[] u) {
+        double[] result = new double[u.length];
+        double length = vectorLength(u);
+        if (length == 0) {
+            result[0] = 1;
+            return result;
+        }
+        for (int i = 0; i < u.length; i++) {
+            result[i] = u[i] / length;
+        }        
+        return result;
     }
     
     /**
@@ -419,5 +436,75 @@ public class MeMath {
         }
         
         return result;
+    }
+
+    /**
+     * Projects vector u onto v.  Crashes if |v|=0.
+     * @param u
+     * @param n
+     * @return 
+     */
+    public static double[] vectorProject(double[] u, double[] v) {
+        double vLen = vectorLength(v);
+        return vectorScale(v, dotProduct(v, u) / sqr(vLen));
+    }
+    
+    public static void vectorScaleIP(double[] u, double alpha) {
+        for (int i = 0; i < u.length; i++) {
+            u[i] *= alpha;
+        }
+    }
+
+    public static double[] vectorScale(double[] u, double alpha) {
+        double[] result = new double[u.length];
+        for (int i = 0; i < u.length; i++) {
+            result[i] = alpha * u[i];
+        }
+        return result;
+    }
+    
+    public static double[] vectorAdd(double[] u, double[] v) {
+        double[] result = new double[u.length];
+        for (int i = 0; i < u.length; i++) {
+            result[i] = u[i] + v[i];
+        }
+        return result;
+    }
+
+    /**
+     * u - v
+     * @param u
+     * @param v
+     * @return 
+     */
+    public static double[] vectorSubtract(double[] u, double[] v) {
+        double[] result = new double[u.length];
+        for (int i = 0; i < u.length; i++) {
+            result[i] = u[i] - v[i];
+        }
+        return result;
+    }
+    
+    /**
+     * Interpolates angle-smoothly from u to v, alpha of the way.  alpha goes
+     * from 0 to 1.  Does not yet yield the right magnitude; resulting vectors
+     * are normalized (I think).
+     * @param u
+     * @param v
+     * @param alpha
+     * @return 
+     */
+    public static double[] vectorAngleInterpolate(double[] u, double[] v, double alpha) {
+        double theta = vectorAngle(u, v);
+        double[] I = vectorNormalize(u);
+        double[] J = vectorNormalize(vectorSubtract(v, vectorProject(v, u)));
+        double[] w = vectorAdd(vectorScale(I, Math.cos(alpha * theta)), vectorScale(J, Math.sin(alpha * theta)));
+        double[] cp = {0, 0};
+        cp[0] = dotProduct(u, w);
+        cp[1] = dotProduct(v, w);
+//        double[] x = vectorScale(vectorAdd(vectorScale(u, dotProduct(u, w)), vectorScale(v, dotProduct(v, w))), 1 / dotProduct(vectorAdd(u, v), w));
+        double[] x = vectorAdd(vectorScale(u, cp[0] / (cp[0] + cp[1])), vectorScale(v, cp[0] / (cp[0] + cp[1])));
+        //System.out.println("acc: " + vectorAngle(w, x));
+        return w;
     }
 }
