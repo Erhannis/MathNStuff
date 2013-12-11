@@ -1,0 +1,11 @@
+This was a collection of random functions and math things, meant for internal use.  I'm putting it up here.  I guarantee nothing about these functions, their accuracy, their safety, their legality, or their tendency not to give you eight terminal illnesses.  If they cause you to sprout green hair from your ears, I told you so.
+
+Seriously, though, some of the math functions may be wrong (in which case it's probably because I gave up on them halfway through), and some may just be grossly inefficient, because I wanted to do it myself.  Nor do I regret it.  (I think MOST of the math functions work, though.)
+
+I release these under the Apache License 2.0.
+
+-Erhannis
+
+
+
+...I better not have written any passwords into these....
