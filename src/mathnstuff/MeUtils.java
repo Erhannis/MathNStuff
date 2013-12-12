@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Array;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Random;
@@ -585,6 +586,56 @@ public class MeUtils {
         int wrote = 0;
         while ((wrote = is.read(buf)) >= 0) {
             os.write(buf, 0, wrote);
+        }
+    }
+    
+    public static interface SearchKernel {
+        public boolean beforeOrAt(long i);
+        public long size();
+    }
+    
+    /**
+     * Find the first i satisfying beforeOrAt.
+     * This has not been thoroughly proven or tested.
+     * @param searchKernel
+     * @return 
+     */
+    public static long binarySearch(SearchKernel searchKernel) {
+        long size = searchKernel.size();
+        if (size == 0) {
+            return -1;
+        }
+        if (size == 1) {
+            if (searchKernel.beforeOrAt(0)) {
+                return 0;
+            } else {
+                return -1;
+            }
+        }
+        long lstart = 0;
+        long lend = (size / 2) - 1;
+        long rstart = (size / 2);
+        long rend = searchKernel.size() - 1;
+        while (true) {
+            if (searchKernel.beforeOrAt(lend)) {
+                if (lstart == lend) {
+                    return lend;
+                }
+                rend = lend;
+                lend = ((rend - lstart + 1) / 2) + lstart - 1;
+                rstart = lend + 1;
+            } else {
+                if (rstart == rend) {
+                    if (searchKernel.beforeOrAt(rstart)) {
+                        return rstart;
+                    } else {
+                        return -1;
+                    }
+                }
+                lstart = rstart;
+                lend = ((rend - lstart + 1) / 2) + lstart - 1;
+                rstart = lend + 1;
+            }
         }
     }
 }
