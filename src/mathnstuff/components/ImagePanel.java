@@ -4,6 +4,7 @@
  */
 package mathnstuff.components;
 
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
 
@@ -25,6 +26,13 @@ public class ImagePanel extends javax.swing.JPanel {
     public void setImage(Image image) {
         if (this.image != image) {
             this.image = image;
+            int width = image.getWidth(null);
+            int height = image.getHeight(null);
+            Dimension size = this.getMinimumSize();
+            size.setSize(width, height);
+            this.setMinimumSize(size);
+            this.setPreferredSize(size);
+            this.invalidate();
             this.repaint();
         }
     }
