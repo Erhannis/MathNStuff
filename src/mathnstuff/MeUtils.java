@@ -638,4 +638,20 @@ public class MeUtils {
             }
         }
     }
+    
+    public static long interpolateColors(long a, long b, double value) {
+        long aa = (0xFF000000 & a) >> (8*3);
+        long ar = (0x00FF0000 & a) >> (8*2);
+        long ag = (0x0000FF00 & a) >> (8*1);
+        long ab = (0x000000FF & a) >> (8*0);
+        long ba = (0xFF000000 & b) >> (8*3);
+        long br = (0x00FF0000 & b) >> (8*2);
+        long bg = (0x0000FF00 & b) >> (8*1);
+        long bb = (0x000000FF & b) >> (8*0);
+        long ra = (long)((aa * (1 - value)) + (ba * value));
+        long rr = (long)((ar * (1 - value)) + (br * value));
+        long rg = (long)((ag * (1 - value)) + (bg * value));
+        long rb = (long)((ab * (1 - value)) + (bb * value));
+        return (ra * 0x01000000) + (rr * 0x00010000) + (rg * 0x00000100) + (rb * 0x00000001);
+    }
 }

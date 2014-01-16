@@ -507,4 +507,8 @@ public class MeMath {
         //System.out.println("acc: " + vectorAngle(w, x));
         return w;
     }
+    
+    public static boolean divides(long top, long bottom) {
+        return ((top % bottom) == 0);
+    }
 }
