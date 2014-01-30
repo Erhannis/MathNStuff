@@ -654,4 +654,32 @@ public class MeUtils {
         long rb = (long)((ab * (1 - value)) + (bb * value));
         return (ra * 0x01000000) + (rr * 0x00010000) + (rg * 0x00000100) + (rb * 0x00000001);
     }
+    
+    public static final char[] DIGITS = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
+    
+    public static String longToBaseN(long l, int base, int minDigits) {
+        StringBuilder sb = new StringBuilder();
+        if (l < 0) {
+            sb.append("-");
+            l *= -1;
+        }
+        int n = Math.max(0, minDigits);
+        for (; n < 100; n++) {
+            if (Math.pow(base, n) > l) {
+                n--;
+                break;
+            }
+        }
+        for (; n >= 0; n--) {
+            double place = Math.pow(base, n);
+            if (place <= l) {
+                int digit = (int)(l / place);
+                sb.append(DIGITS[digit]);
+                l = (long)(l - (digit * place));
+            } else {
+                sb.append(DIGITS[0]);
+            }
+        }
+        return sb.toString();
+    }
 }
