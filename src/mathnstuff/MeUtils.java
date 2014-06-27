@@ -6,6 +6,7 @@ package mathnstuff;
  */
 
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -368,6 +369,14 @@ public class MeUtils {
         sb.append(s.substring(0, leftover));
         return sb.toString();
     }
+
+    public static String bytesToString(byte[] bytes) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < bytes.length; i++) {
+            sb.append((char)bytes[i]);
+        }
+        return sb.toString();
+    }
     
     public static String bytesToHex(byte[] bytes) {
         StringBuilder sb = new StringBuilder();
@@ -579,6 +588,12 @@ public class MeUtils {
     
     public static int colorBytesToInt(byte r, byte g, byte b, byte a) {
         return (a * 0x01000000) + (r * 0x00010000) + (g * 0x00000100) + (b * 0x00000001);
+    }
+
+    public static byte[] inputStreamToBytes(InputStream is) throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        pipeInputStreamToOutputStream(is, baos);
+        return baos.toByteArray();
     }
     
     public static void pipeInputStreamToOutputStream(InputStream is, OutputStream os) throws IOException {
