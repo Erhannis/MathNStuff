@@ -511,4 +511,20 @@ public class MeMath {
     public static boolean divides(long top, long bottom) {
         return ((top % bottom) == 0);
     }
+    
+    public static double sum(double[] array) {
+        double sum = 0;
+        for (int i = 0; i < array.length; i++) {
+            sum += array[i];
+        }
+        return sum;
+    }
+
+    public static int sum(int[] array) {
+        int sum = 0;
+        for (int i = 0; i < array.length; i++) {
+            sum += array[i];
+        }
+        return sum;
+    }
 }
