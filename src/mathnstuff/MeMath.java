@@ -6,7 +6,7 @@ package mathnstuff;
  */
 
 
-import java.util.ArrayList;
+import java.util.Random;
 import networks.Edge;
 import networks.Network;
 import networks.Node;
@@ -526,5 +526,22 @@ public class MeMath {
             sum += array[i];
         }
         return sum;
+    }
+
+    /**
+     * Given `counts` full of nonnegative index counts, returns a random index.
+     * (Like drawing from a bag, with replacement.)
+     * I might want to do something aside from Random....
+     * @param r
+     * @param array
+     * @return 
+     */
+    public static int pickOne(Random r, int[] counts) {
+        int index = r.nextInt(sum(counts));
+        for (int i = 0; i < counts.length; i++) {
+            if (counts[i] > index) return i;
+            index -= counts[i];
+        }
+        return -1;
     }
 }
