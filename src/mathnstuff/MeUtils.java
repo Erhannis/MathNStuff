@@ -655,14 +655,14 @@ public class MeUtils {
     }
     
     public static long interpolateColors(long a, long b, double value) {
-        long aa = (0xFF000000 & a) >> (8*3);
-        long ar = (0x00FF0000 & a) >> (8*2);
-        long ag = (0x0000FF00 & a) >> (8*1);
-        long ab = (0x000000FF & a) >> (8*0);
-        long ba = (0xFF000000 & b) >> (8*3);
-        long br = (0x00FF0000 & b) >> (8*2);
-        long bg = (0x0000FF00 & b) >> (8*1);
-        long bb = (0x000000FF & b) >> (8*0);
+        long aa = (0xFF000000 & a) >>> (8*3);
+        long ar = (0x00FF0000 & a) >>> (8*2);
+        long ag = (0x0000FF00 & a) >>> (8*1);
+        long ab = (0x000000FF & a) >>> (8*0);
+        long ba = (0xFF000000 & b) >>> (8*3);
+        long br = (0x00FF0000 & b) >>> (8*2);
+        long bg = (0x0000FF00 & b) >>> (8*1);
+        long bb = (0x000000FF & b) >>> (8*0);
         long ra = (long)((aa * (1 - value)) + (ba * value));
         long rr = (long)((ar * (1 - value)) + (br * value));
         long rg = (long)((ag * (1 - value)) + (bg * value));
@@ -696,5 +696,25 @@ public class MeUtils {
             }
         }
         return sb.toString();
+    }
+    
+    public static int[] intToARGB(int color) {
+        return new int[] {(color & 0xFF000000) >>> 24, (color & 0x00FF0000) >>> 16, (color & 0x0000FF00) >>> 8, (color & 0x000000FF)};
+    }
+    
+    /**
+     * Doubles in range [0,1].
+     * Actually, I dunno why I did this one this way.
+     * @param a
+     * @param r
+     * @param g
+     * @param b
+     * @return 
+     */
+    public static int ARGBToInt(double a, double r, double g, double b) {
+        return MeMath.bound((int)(0xFF * a), 0x00, 0xFF) << 24
+             + MeMath.bound((int)(0xFF * r), 0x00, 0xFF) << 16
+             + MeMath.bound((int)(0xFF * g), 0x00, 0xFF) << 8
+             + MeMath.bound((int)(0xFF * b), 0x00, 0xFF);
     }
 }
