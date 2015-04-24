@@ -339,7 +339,7 @@ public class MeMath {
      * @param n
      * @return 
      */
-    public static final double erf(double x, int n) {
+    public static double erf(double x, int n) {
         double sum = 0;
         for (int i = 0; i < n; i++) {
             if (i % 2 == 0) {
@@ -358,7 +358,7 @@ public class MeMath {
      * @param x
      * @return 
      */
-    public static final double erf(double x) {
+    public static double erf(double x) {
         double t = 1 / (1 + 0.5 * Math.abs(x));
         double tau = t * Math.exp(-(x*x) - 1.26551223 + 1.00002368*t + 0.37409196*Math.pow(t,2) + 0.09678418*Math.pow(t,3) - 0.18628806*Math.pow(t,4) + 0.27886807*Math.pow(t,5) - 1.13520398*Math.pow(t,6) + 1.48851587*Math.pow(t,7) - 0.82215223*Math.pow(t,8) + 0.17087277*Math.pow(t,9));
         if (x >= 0) {
