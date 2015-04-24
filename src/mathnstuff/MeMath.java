@@ -298,6 +298,40 @@ public class MeMath {
         }
         return max;
     }
+
+    public static int max(int[] array) {
+        int max = Integer.MIN_VALUE;
+        for (int i = 0; i < array.length; i++) {
+            if (array[i] > max) {
+                max = array[i];
+            }
+        }
+        return max;
+    }
+
+    /**
+     * I'll make this generic later.
+     * @return 
+     */
+    public static double min(double[] array) {
+        double min = Double.NEGATIVE_INFINITY;
+        for (int i = 0; i < array.length; i++) {
+            if (array[i] < min) {
+                min = array[i];
+            }
+        }
+        return min;
+    }
+
+    public static int min(int[] array) {
+        int min = Integer.MAX_VALUE;
+        for (int i = 0; i < array.length; i++) {
+            if (array[i] < min) {
+                min = array[i];
+            }
+        }
+        return min;
+    }
     
     /**
      * Really only accurate within [-2,2], at n=20.
