@@ -511,6 +511,14 @@ public class MeMath {
         return result;
     }
 
+    public static int[] vectorAdd(int[] u, int[] v) {
+        int[] result = new int[u.length];
+        for (int i = 0; i < u.length; i++) {
+            result[i] = u[i] + v[i];
+        }
+        return result;
+    }
+    
     /**
      * u - v
      * @param u
