@@ -6,7 +6,13 @@ package mathnstuff;
  */
 
 
+import java.util.ArrayList;
+import java.util.Collections;
+import static java.util.Collections.swap;
+import java.util.List;
+import java.util.ListIterator;
 import java.util.Random;
+import java.util.RandomAccess;
 import networks.Edge;
 import networks.Network;
 import networks.Node;
@@ -595,5 +601,166 @@ public class MeMath {
         if (value <= min) return min;
         if (value >= max) return max;
         return value;
+    }
+    
+    public static class MatlabFunctions {
+      public static ArrayList<Integer> randperm(int i) {
+        return randperm(i, null);
+      }
+      
+      public static ArrayList<Integer> randperm(int i, SmallRandom rnd) {
+        ArrayList<Integer> indices = new ArrayList<Integer>();
+        for (int j = 1; j <= i; j++) {
+          indices.add(j);
+        }
+        if (rnd == null) {
+          Collections.shuffle(indices);
+        } else {
+          shuffle(indices, rnd);
+        }
+        return indices;
+      }
+
+    private static final int SHUFFLE_THRESHOLD        =    5;
+      
+    public static void shuffle(List<?> list, SmallRandom rnd) {
+        int size = list.size();
+        if (size < SHUFFLE_THRESHOLD || list instanceof RandomAccess) {
+            for (int i=size; i>1; i--)
+                swap(list, i-1, rnd.nextInt(i));
+        } else {
+            Object arr[] = list.toArray();
+
+            // Shuffle array
+            for (int i=size; i>1; i--)
+                swap(arr, i-1, rnd.nextInt(i));
+
+            // Dump array back into list
+            // instead of using a raw type here, it's possible to capture
+            // the wildcard but it will require a call to a supplementary
+            // private method
+            ListIterator it = list.listIterator();
+            for (int i=0; i<arr.length; i++) {
+                it.next();
+                it.set(arr[i]);
+            }
+        }
+    }
+
+    public static void swap(List<?> list, int i, int j) {
+        // instead of using a raw type here, it's possible to capture
+        // the wildcard but it will require a call to a supplementary
+        // private method
+        final List l = list;
+        l.set(i, l.set(j, l.get(i)));
+    }
+    
+    private static void swap(Object[] arr, int i, int j) {
+        Object tmp = arr[i];
+        arr[i] = arr[j];
+        arr[j] = tmp;
+    }
+    
+      public static ArrayList<ArrayList<Integer>> zeros(int y, int x) {
+        return digitArray(y, x, 0);
+      }
+
+      public static ArrayList<ArrayList<Integer>> ones(int y, int x) {
+        return digitArray(y, x, 1);
+      }
+      
+      public static ArrayList<ArrayList<Integer>> digitArray(int y, int x, int digit) {
+        ArrayList<ArrayList<Integer>> result = new ArrayList<ArrayList<Integer>>();
+        for (int j = 1; j <= y; j++) {
+          ArrayList<Integer> row = new ArrayList<Integer>();
+          for (int i = 1; i <= x; i++) {
+            row.add(digit);
+          }
+          result.add(row);
+        }
+        return result;
+      }
+    }
+
+    /**
+     * Throws IllegalArgumentException if signum(f(left)) == signum(f(right)), unless one of
+     * them yields 0.
+     * @param fn
+     * @param left
+     * @param right
+     * @param max_iter
+     * @param tol
+     * @return 
+     */
+  public static double fzero(RToRFunction fn, double left, double right, int max_iter, double tol) {
+    if (right < left) {
+      double bucket = left;
+      left = right;
+      right = bucket;
+    }
+    
+    double lv = fn.evaluate(left);
+    double rv = fn.evaluate(right);
+    if (lv == 0) {
+      return left;
+    } else if (rv == 0) {
+      return right;
+    }
+    if (Math.signum(lv) == Math.signum(rv)) {
+      throw new IllegalArgumentException("Same sign");
+    }
+    
+    int iter = 0;
+    double nx = (left + right) / 2;
+    double nv = -1;
+    
+    while (iter < max_iter) { // May technically do one extra iteration
+      nv = fn.evaluate(nx);
+      if (nv == 0) {
+        return nx;
+      } else if (Math.signum(nv) == Math.signum(lv)) {
+        if (Math.abs(left - nx) <= tol) {
+          return nx;
+        }
+        left = nx;
+        //lv = fn.evaluate(left);
+      } else {
+        if (Math.abs(right - nx) <= tol) {
+          return nx;
+        }
+        right = nx;
+        //rv = fn.evaluate(right);
+      }
+      nx = (left + right) / 2;
+      
+      iter++;
+    }
+    return nx;
+  }
+  
+    public static class SmallRandom {
+      public long randState = System.nanoTime();
+      
+      public void setSeed(long seed) {
+        randState = seed;
+      }
+    
+      public long xorRand() {
+        long x = randState;
+        x ^= (x << 21);
+        x ^= (x >>> 35);
+        x ^= (x << 4);
+        randState = x;
+        return x >>> 1; // this might degrade randomness?  don't care too much
+      }
+    
+      public double xorRandDbl() {
+        long x = xorRand();
+        return x / ((double)(Long.MAX_VALUE));
+      }
+      
+      public int nextInt(int i) {
+        return (int)(xorRand() % i);
+      }
     }
 }

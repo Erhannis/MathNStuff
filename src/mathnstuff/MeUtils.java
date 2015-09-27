@@ -717,4 +717,10 @@ public class MeUtils {
              + MeMath.bound((int)(0xFF * g), 0x00, 0xFF) << 8
              + MeMath.bound((int)(0xFF * b), 0x00, 0xFF);
     }
+    
+    public static String padLeft(char left, String right, int totalWidth) {
+      int padding = totalWidth - right.length();
+      return multiplyString(left + "", padding) + right;
+    }
+    
 }

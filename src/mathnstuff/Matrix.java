@@ -10,11 +10,17 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
+ * A matrix class.  Important: it's indexed col then row, like vals[x][y].
+ * Today I need to interact with things in y.x format.  This has led me to create
+ * an abomination; a slew of "Tdnl" functions.  This means that the order of its
+ * inputs and outputs is opposite from what it normally would be.  HOWEVER, the matrix
+ * still internally stores its values x.y so it can work like normal - you just
+ * have to be paranoid when getting and setting values, and converting it to other forms.
  * @author mewer12
  */
 public class Matrix implements Streamable {
@@ -59,6 +65,87 @@ public class Matrix implements Streamable {
         this.val = new double[cols][rows];
     }
 
+    /**
+     * Uggggh.  It's a super pain having to mix row.col vs col.row
+     * @param rows
+     * @param cols
+     * @param value
+     * @return 
+     */
+    public static Matrix digitMatrixTdnl(int rows, int cols, double value) {
+      return digitMatrix(cols, rows, value);
+    }
+
+    public static Matrix zerosTdnl(int rows, int cols) {
+      return digitMatrix(cols, rows, 0);
+    }
+
+    public static Matrix onesTdnl(int rows, int cols) {
+      return digitMatrix(cols, rows, 1);
+    }
+
+    public static Matrix randTdnl(int rows, int cols, Random r) {
+      return rand(cols, rows, r);
+    }
+    
+    public static Matrix digitMatrix(int cols, int rows, double value) {
+      Matrix result = new Matrix(cols, rows);
+      for (int y = 0; y < rows; y++) {
+        for (int x = 0; x < cols; x++) {
+          result.val[x][y] = value;
+        }
+      }
+      return result;
+    }
+    
+    public static Matrix zeros(int cols, int rows) {
+      return digitMatrix(cols, rows, 0);
+    }
+
+    public static Matrix ones(int cols, int rows) {
+      return digitMatrix(cols, rows, 1);
+    }
+    
+    public static Matrix rand(int cols, int rows, Random r) {
+      Matrix result = new Matrix(cols, rows);
+      for (int y = 0; y < rows; y++) {
+        for (int x = 0; x < cols; x++) {
+          result.val[x][y] = r.nextDouble();
+        }
+      }
+      return result;
+    }
+    
+    /**
+     * Takes a list of lists of doubles IN y.x FORM, and returns a matrix
+     * internally IN x.y FORM.
+     * @return 
+     */
+    public static Matrix fromArrayListTdnl(ArrayList<ArrayList<Double>> array) {
+      Matrix result = new Matrix(array.get(0).size(), array.size());
+      for (int y = 0; y < result.rows; y++) {
+        for (int x = 0; x < result.cols; x++) {
+          result.val[x][y] = array.get(y).get(x);
+        }
+      }
+      return result;
+    }
+    
+    /**
+     * Returns an list of lists of doubles IN y.x FORM.
+     * @return 
+     */
+    public ArrayList<ArrayList<Double>> toArrayListTdnl() {
+      ArrayList<ArrayList<Double>> result = new ArrayList<ArrayList<Double>>();
+      for (int y = 0; y < rows; y++) {
+        ArrayList<Double> row = new ArrayList<Double>();
+        for (int x = 0; x < cols; x++) {
+          row.add(val[x][y]);
+        }
+        result.add(row);
+      }
+      return result;
+    }
 //    /**
 //     * Currently hard-coded to have up to 10x10 matrices in cache.  Will crash
 //     * if you try to access one that isn't there.  If you want bigger ones cached,
