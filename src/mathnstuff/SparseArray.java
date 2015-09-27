@@ -6,7 +6,9 @@
 package mathnstuff;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import mathnstuff.utils.Factory;
 
 /**
@@ -108,5 +110,13 @@ public class SparseArray<T> {
   
   public T remove(int... coords) {
     return data.remove(new FungibleCoords(coords));
+  }
+  
+  /**
+   * Ugh, I might eventually make it return a pair of coords and T....
+   * @return 
+   */
+  public Iterator<T> getIterator() {
+    return data.values().iterator();
   }
 }
