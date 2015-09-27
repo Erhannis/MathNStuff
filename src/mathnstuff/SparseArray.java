@@ -105,4 +105,8 @@ public class SparseArray<T> {
     data.put(new FungibleCoords(coords), value);
     return o;
   }
+  
+  public T remove(int... coords) {
+    return data.remove(new FungibleCoords(coords));
+  }
 }
