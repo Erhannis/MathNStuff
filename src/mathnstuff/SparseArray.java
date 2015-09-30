@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
+import java.util.Set;
 import mathnstuff.utils.Factory;
 
 /**
@@ -118,5 +119,9 @@ public class SparseArray<T> {
   
   public Iterator<Entry<FungibleCoords, T>> getEntryIterator() {
     return data.entrySet().iterator();
+  }
+  
+  public Set<Entry<FungibleCoords, T>> getEntrySet() {
+    return data.entrySet();
   }
 }
