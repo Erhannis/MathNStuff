@@ -434,6 +434,20 @@ public class MeMath {
         }
         return sum;
     }
+
+    /**
+     * Arbitrary n.
+     * @param u
+     * @param v
+     * @return 
+     */
+    public static int dotProduct(int[] u, int[] v) {
+        int sum = 0;
+        for (int i = 0; i < u.length; i++) {
+            sum += u[i] * v[i];
+        }
+        return sum;
+    }
     
     /**
      * Arbitrary n.
@@ -515,6 +529,38 @@ public class MeMath {
         int[] result = new int[u.length];
         for (int i = 0; i < u.length; i++) {
             result[i] = u[i] + v[i];
+        }
+        return result;
+    }
+
+    public static double vectorDistance(int[] u, int[] v) {
+        double result = 0;
+        for (int i = 0; i < u.length; i++) {
+            result += sqr(u[i] - v[i]);
+        }
+        return Math.sqrt(result);
+    }
+
+    public static double vectorDistanceSqr(int[] u, int[] v) {
+        double result = 0;
+        for (int i = 0; i < u.length; i++) {
+            result += sqr(u[i] - v[i]);
+        }
+        return result;
+    }
+
+    public static double vectorDistance(double[] u, double[] v) {
+        double result = 0;
+        for (int i = 0; i < u.length; i++) {
+            result += sqr(u[i] - v[i]);
+        }
+        return Math.sqrt(result);
+    }
+
+    public static double vectorDistanceSqr(double[] u, double[] v) {
+        double result = 0;
+        for (int i = 0; i < u.length; i++) {
+            result += sqr(u[i] - v[i]);
         }
         return result;
     }
