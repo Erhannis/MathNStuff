@@ -5,6 +5,7 @@
  */
 package mathnstuff;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -18,13 +19,13 @@ import mathnstuff.utils.Factory;
  * eh.
  * @author MEwer
  */
-public class SparseArray<T> {
+public class SparseArray<T> implements Serializable {
   private int dims;
   private Factory<T> defaultConstructor;
   
   private HashMap<FungibleCoords, T> data = new HashMap<FungibleCoords, T>();
   
-  public static class FungibleCoords {
+  public static class FungibleCoords implements Serializable {
     private int[] coords;
     private int hash;
     public FungibleCoords(int... coords) {
