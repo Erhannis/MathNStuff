@@ -791,6 +791,11 @@ public class MeMath {
     }
     return nx;
   }
+
+  public static boolean nearerFirst(double a, double b, double c) {
+    //TODO Might be able to make an optimized version if we know a < c < b
+    return Math.abs(c-a) < Math.abs(b-c);
+  }
   
     public static class SmallRandom {
       public long randState = System.nanoTime();
