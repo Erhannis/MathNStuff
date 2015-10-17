@@ -6,12 +6,12 @@ package mathnstuff;
  */
 
 
+import java.awt.Rectangle;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Array;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Random;
@@ -723,4 +723,15 @@ public class MeUtils {
       return multiplyString(left + "", padding) + right;
     }
     
+    public static Rectangle fixRectIP(Rectangle r) {
+      if (r.width < 0) {
+        r.width *= -1;
+        r.x -= r.width;
+      }
+      if (r.height < 0) {
+        r.height *= -1;
+        r.y -= r.height;
+      }
+      return r;
+    }
 }
