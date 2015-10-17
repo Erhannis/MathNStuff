@@ -6,7 +6,7 @@ package mathnstuff;
  */
 
 
-import java.awt.Rectangle;
+import java.awt.geom.Rectangle2D;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -723,14 +723,24 @@ public class MeUtils {
       return multiplyString(left + "", padding) + right;
     }
     
-    public static Rectangle fixRectIP(Rectangle r) {
-      if (r.width < 0) {
-        r.width *= -1;
-        r.x -= r.width;
+    public static Rectangle2D fixRect2DIP(Rectangle2D r) {
+      double w = r.getWidth();
+      double h = r.getHeight();
+      double x = r.getX();
+      double y = r.getY();
+      boolean changed = false;
+      if (w < 0) {
+        w *= -1;
+        x -= w;
+        changed = true;
       }
-      if (r.height < 0) {
-        r.height *= -1;
-        r.y -= r.height;
+      if (h < 0) {
+        h *= -1;
+        y -= h;
+        changed = true;
+      }
+      if (changed) {
+        r.setRect(x, y, w, h);
       }
       return r;
     }
