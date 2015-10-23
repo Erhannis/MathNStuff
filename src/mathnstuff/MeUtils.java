@@ -12,9 +12,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Array;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import sun.misc.Unsafe;
 
 /**
  *
@@ -744,4 +750,100 @@ public class MeUtils {
       }
       return r;
     }
+    
+    
+    //<editor-fold defaultstate="collapsed" desc="Beautiful Unsafe things from mishadoff.com">
+    
+    /**
+     * AHAHAHAHAAA, I know this is totally dangerous.  It IS CALLED "Unsafe".
+     * But it's just such a beautifully dangerous weaponized jackpot of black
+     * magic I can't help it.
+     * 
+     * Many thanks to http://mishadoff.com for his tutorial on it, and for this
+     * function itself.
+     * @return 
+     */
+    public static Unsafe getUnsafe() {
+      try {
+        Field f = Unsafe.class.getDeclaredField("theUnsafe");
+        f.setAccessible(true);
+        Unsafe unsafe = (Unsafe) f.get(null);
+        return unsafe;
+      } catch (NoSuchFieldException ex) {
+        Logger.getLogger(MeUtils.class.getName()).log(Level.SEVERE, null, ex);
+      } catch (SecurityException ex) {
+        Logger.getLogger(MeUtils.class.getName()).log(Level.SEVERE, null, ex);
+      } catch (IllegalArgumentException ex) {
+        Logger.getLogger(MeUtils.class.getName()).log(Level.SEVERE, null, ex);
+      } catch (IllegalAccessException ex) {
+        Logger.getLogger(MeUtils.class.getName()).log(Level.SEVERE, null, ex);
+      }
+      return null;
+    }
+    
+    public static long sizeOfManual(Object o) {
+      Unsafe u = getUnsafe();
+      HashSet<Field> fields = new HashSet<Field>();
+      Class c = o.getClass();
+      while (c != Object.class) {
+        for (Field f : c.getDeclaredFields()) {
+          if ((f.getModifiers() & Modifier.STATIC) == 0) {
+            fields.add(f);
+          }
+        }
+        c = c.getSuperclass();
+      }
+
+      // get offset
+      long maxSize = 0;
+      for (Field f : fields) {
+        long offset = u.objectFieldOffset(f);
+        if (offset > maxSize) {
+          maxSize = offset;
+        }
+      }
+
+      return ((maxSize / 8) + 1) * 8;   // padding
+    }
+    
+    /**
+     * Broken?
+     * @param object
+     * @return 
+     */
+    public static long sizeOf(Object object){
+      return getUnsafe().getAddress(normalize(getUnsafe().getInt(object, 4L)) + 12L);
+    }
+    
+    public static Object shallowCopy(Object obj) {
+      long size = sizeOf(obj);
+      long start = toAddress(obj);
+      long address = getUnsafe().allocateMemory(size);
+      getUnsafe().copyMemory(start, address, size);
+      return fromAddress(address);
+    }
+
+    public static long toAddress(Object obj) {
+      Object[] array = new Object[] {obj};
+      long baseOffset = getUnsafe().arrayBaseOffset(Object[].class);
+      return normalize(getUnsafe().getInt(array, baseOffset));
+    }
+
+    public static Object fromAddress(long address) {
+      Object[] array = new Object[] {null};
+      long baseOffset = getUnsafe().arrayBaseOffset(Object[].class);
+      getUnsafe().putLong(array, baseOffset, address);
+      return array[0];
+    }
+    
+    private static long normalize(int value) {
+      if(value >= 0) return value;
+      return (~0L >>> 32) & value;
+    }
+    
+    public static long normalizeInt(int value) {
+      return normalize(value);
+    }
+
+    //</editor-fold>
 }
