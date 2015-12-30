@@ -20,6 +20,8 @@ import java.util.Iterator;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.commons.codec.digest.UnixCrypt;
+import org.apache.commons.lang3.StringUtils;
 import sun.misc.Unsafe;
 
 /**
@@ -751,6 +753,16 @@ public class MeUtils {
       return r;
     }
     
+    public static String calcKusabaTripcode(String password) {
+      String salt = (password + "H.").substring(1, 3);
+      salt = salt.replaceAll("[^\\.-z]", ".");
+      salt = StringUtils.replaceChars(salt, ":;<=>?@[\\]^_`", "ABCDEFGabcdef");
+      String tripcode = UnixCrypt.crypt(password, salt);
+      if (tripcode.length() > 10) {
+        tripcode = tripcode.substring(tripcode.length() - 10);
+      }
+      return tripcode;
+    }
     
     //<editor-fold defaultstate="collapsed" desc="Beautiful Unsafe things from mishadoff.com">
     
