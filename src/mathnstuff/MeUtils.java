@@ -15,6 +15,7 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Random;
@@ -762,6 +763,32 @@ public class MeUtils {
         tripcode = tripcode.substring(tripcode.length() - 10);
       }
       return tripcode;
+    }
+    
+    /*
+     * This method was written by Doug Lea with assistance from members of JCP
+     * JSR-166 Expert Group and released to the public domain, as explained at
+     * http://creativecommons.org/licenses/publicdomain
+     * 
+     * As of 2010/06/11, this method is identical to the (package private) hash
+     * method in OpenJDK 7's java.util.HashMap class.
+     */
+    public static int smear(int hashCode) {
+      hashCode ^= (hashCode >>> 20) ^ (hashCode >>> 12);
+      return hashCode ^ (hashCode >>> 7) ^ (hashCode >>> 4);
+    }
+  
+    /**
+     * THIS IS PROBABLY NOT A GOOD HASH.  But the idea is that I want a way to
+     * find a hash for an array of integers.  So, I'll just plug them in here
+     * one by one and update the hash as I go.
+     * (Yep, not a good hash.)
+     * @param oldHash
+     * @param newValue
+     * @return 
+     */
+    public static int hashInts(int oldHash, int newValue) {
+      return smear(oldHash + smear(newValue));
     }
     
     //<editor-fold defaultstate="collapsed" desc="Beautiful Unsafe things from mishadoff.com">
