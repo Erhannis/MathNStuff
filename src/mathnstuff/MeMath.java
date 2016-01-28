@@ -822,4 +822,67 @@ public class MeMath {
         return (int)(xorRand() % i);
       }
     }
+    
+    public static final double PLANCK_CONSTANT = 6.626070040e-34; // J*s
+    public static final double SPEED_OF_LIGHT = 299792458; // m/s
+    public static final double BOLTZMANN_CONSTANT = 1.38064852e-23; // J/K
+    
+    public static final double H = PLANCK_CONSTANT;
+    public static final double C = SPEED_OF_LIGHT;
+    public static final double K = BOLTZMANN_CONSTANT;
+    
+    public static final double _n = 1e-9; // nano
+    public static final double _u = 1e-6; // micro
+    public static final double _m = 1e-3; // milli
+    public static final double _k = 1e+3; // kilo
+    public static final double _M = 1e+6; // mega
+    public static final double _G = 1e+9; // giga
+    
+    /**
+     * Per Wikipedia: "I(ν,T) is the energy per unit time (or the power) radiated
+     * per unit area of emitting surface in the normal direction per unit solid
+     * angle per unit frequency by a black body at temperature T, also known as
+     * spectral radiance."
+     * Using wavelength instead of frequency.
+     * @param wl in m
+     * @param temp in K
+     * @return 
+     */
+    public static double planckBlackBody(double wl, double temp) {
+      return (((2 * H * C * C)/(wl * wl * wl * wl * wl)) / Math.expm1((H*C)/(wl*K*temp)));
+      //return (((2 * H * freq * freq * freq)/(C * C)) / Math.expm1((H*freq)/(K*temp)));
+    }
+    
+    /**
+     * Maybe I'll do this later.  Integrate planckBlackBody * opsin absorption
+     * over the range of visible wavelengths, ~350 nm to ~725 nm.
+     * @param wl
+     * @param temp
+     * @return 
+     */
+    public static double[] planckRGB(double wl, double temp) {
+      return new double[]{0, 0, 0};
+    }
+    
+    public static double[] planckianLocus(double temp) {
+      double t = temp;
+      double x, y;
+      if (t < 1667) {
+        x = 0.5031877153242192;
+        y = 0.4152509310091007;
+      } else if (t <= 2222) {
+        x = (-0.2661239e9 / (t * t * t)) + (-0.2343580e6 / (t * t)) + (0.8776956e3 / (t)) + (0.179910);
+        y = (-1.1063814 * (x * x * x)) + (-1.34811020 * (x * x)) + (2.18555832 * (x)) + (-0.20219683);
+      } else if (t <= 4000) {
+        x = (-0.2661239e9 / (t * t * t)) + (-0.2343580e6 / (t * t)) + (0.8776956e3 / (t)) + (0.179910);
+        y = (-0.9549476 * (x * x * x)) + (-1.37418593 * (x * x)) + (2.09137015 * (x)) + (-0.16748867);
+      } else if (t <= 25000) {
+        x = (-3.0258469e9 / (t * t * t)) + (2.1070379e6 / (t * t)) + (0.2226347e3 / (t)) + (0.240390);
+        y = (3.0817580 * (x * x * x)) + (-5.87338670 * (x * x)) + (3.75112997 * (x)) + (-0.37001483);
+      } else {
+        x = 0.2524729944384;
+        y = 0.2522547912436536;
+      }
+      return new double[]{x, y};
+    }
 }
