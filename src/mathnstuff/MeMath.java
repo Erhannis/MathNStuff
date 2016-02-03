@@ -864,15 +864,22 @@ public class MeMath {
       return new double[]{0, 0, 0};
     }
     
+    /**
+     * Returns x and y in the CIE chromaticity space.
+     * @param temp
+     * @return 
+     */
     public static double[] planckianLocus(double temp) {
       double t = temp;
       double x, y;
       if (t < 1667) {
-        x = 0.5031877153242192;
-        y = 0.4152509310091007;
+        x = 0.56463862848509;
+        y = 0.40288701553742323;
       } else if (t <= 2222) {
         x = (-0.2661239e9 / (t * t * t)) + (-0.2343580e6 / (t * t)) + (0.8776956e3 / (t)) + (0.179910);
         y = (-1.1063814 * (x * x * x)) + (-1.34811020 * (x * x)) + (2.18555832 * (x)) + (-0.20219683);
+        //x = 0.4;
+        //y = 0.4;
       } else if (t <= 4000) {
         x = (-0.2661239e9 / (t * t * t)) + (-0.2343580e6 / (t * t)) + (0.8776956e3 / (t)) + (0.179910);
         y = (-0.9549476 * (x * x * x)) + (-1.37418593 * (x * x)) + (2.09137015 * (x)) + (-0.16748867);
@@ -884,5 +891,38 @@ public class MeMath {
         y = 0.2522547912436536;
       }
       return new double[]{x, y};
+    }
+    
+    public static final double MAX_PLANCK_Y = 0.33735332946938534;  // The highest luminance I found for the planckian locus that didn't clip any red.
+    
+    /**
+     * Assuming you're getting x and y from planckianLocus, might I recommend MAX_PLANCK_Y?
+     * @param x
+     * @param y
+     * @param Y
+     * @return 
+     */
+    public static double[] CIExyYtoXYZ(double x, double y, double Y) {
+      return new double[]{(x*Y) / y, Y, (Y / y) * (1 - x - y)};
+    }
+    
+    public static double[] CIEXYZtoRGB(double X, double Y, double Z, boolean bound) {
+      double Rl = (3.2406*X) + (-1.5372*Y) + (-0.4986*Z);
+      double Gl = (-0.9689*X) + (1.8758*Y) + (0.0415*Z);
+      double Bl = (0.0557*X) + (-0.2040*Y) + (1.0570*Z);
+      double a = 0.055;
+      double R = ((Rl <= 0.0031308) ? (12.92 * Rl) : ((1 + a) * Math.pow(Rl, 1/2.4)) - a);
+      double G = ((Gl <= 0.0031308) ? (12.92 * Gl) : ((1 + a) * Math.pow(Gl, 1/2.4)) - a);
+      double B = ((Bl <= 0.0031308) ? (12.92 * Bl) : ((1 + a) * Math.pow(Bl, 1/2.4)) - a);
+      if (bound) {
+        R = bound(R, 0, 1);
+        G = bound(G, 0, 1);
+        B = bound(B, 0, 1);
+      }
+      return new double[]{R, G, B};
+    }
+    
+    public static int RGBtoIntARGB(double R, double G, double B) {
+      return (0xFF000000) + (((int)(0x00FF0000 * R)) & 0x00FF0000) + (((int)(0x0000FF00 * G)) & 0x0000FF00) + (((int)(0x000000FF * B)) & 0x000000FF);
     }
 }
