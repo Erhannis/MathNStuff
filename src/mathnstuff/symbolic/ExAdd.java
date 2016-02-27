@@ -139,4 +139,27 @@ public class ExAdd extends Expression {
       return "0";
     }
   }
+
+  @Override
+  public String toStringSimple() {
+    if (terms.size() > 0) {
+      StringBuilder sb = new StringBuilder();
+      if (Expression.addParentheses(terms.get(0))) {
+        sb.append("(" + terms.get(0).toStringSimple() + ")");
+      } else {
+        sb.append(terms.get(0).toStringSimple());
+      }
+      for (int i = 1; i < terms.size(); i++) {
+        if (Expression.addParentheses(terms.get(i))) {
+          sb.append(" + (" + terms.get(i).toStringSimple() + ")");
+        } else {
+          sb.append(" + " + terms.get(i).toStringSimple());
+        }
+      }
+      return sb.toString();
+    } else {
+      // Kinda weird, but technically right, I think?
+      return "0";
+    }
+  }
 }

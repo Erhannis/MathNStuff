@@ -51,4 +51,20 @@ public class ExDiv extends Expression {
   public String toString() {
     return "(" + top + ")/(" + bot + ")";
   }
+
+  @Override
+  public String toStringSimple() {
+    StringBuilder sb = new StringBuilder();
+    if (Expression.addParentheses(top)) {
+      sb.append("(" + top.toStringSimple() + ")/");
+    } else {
+      sb.append(top.toStringSimple() + "/");
+    }
+    if (Expression.addParentheses(bot)) {
+      sb.append("(" + bot.toStringSimple() + ")");
+    } else {
+      sb.append(bot.toStringSimple());
+    }
+    return sb.toString();
+  }
 }

@@ -122,4 +122,21 @@ public abstract class Expression {
       }
     };
   }
+  
+  /**
+   * The toString method on most of the other things added parentheses all over;
+   * makes it hard to read.  This one will try not to add as many parentheses.
+   * @return 
+   */
+  public abstract String toStringSimple();
+  
+  protected static boolean addParentheses(Expression e) {
+    if (e instanceof ExConstant) {
+      return false;
+    } else if (e instanceof ExVarScalar) {
+      return false;
+    } else {
+      return true;
+    }
+  }
 }

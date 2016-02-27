@@ -45,4 +45,9 @@ public class ExConstant extends Expression {
   public String toString() {
     return Double.toString(value);
   }
+
+  @Override
+  public String toStringSimple() {
+    return Double.toString(value);
+  }
 }

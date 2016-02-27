@@ -77,4 +77,20 @@ public class ExPow extends Expression {
   public String toString() {
     return "(" + base + ")^(" + exp + ")";
   }
+
+  @Override
+  public String toStringSimple() {
+    StringBuilder sb = new StringBuilder();
+    if (Expression.addParentheses(base)) {
+      sb.append("(" + base.toStringSimple() + ")^");
+    } else {
+      sb.append(base.toStringSimple() + "^");
+    }
+    if (Expression.addParentheses(exp)) {
+      sb.append("(" + exp.toStringSimple() + ")");
+    } else {
+      sb.append(exp.toStringSimple());
+    }
+    return sb.toString();
+  }
 }
