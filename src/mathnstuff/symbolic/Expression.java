@@ -104,6 +104,7 @@ public abstract class Expression {
   
   /**
    * I'll have to change it once I introduce vectors, etc.
+   * //TODO It sometimes requires multiple iterations to fully resolve.  Grr.
    * @param varValues
    * @return 
    */
