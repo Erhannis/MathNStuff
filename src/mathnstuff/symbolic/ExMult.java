@@ -7,7 +7,7 @@ package mathnstuff.symbolic;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
+import java.util.Comparator;
 import java.util.Map;
 
 /**
@@ -21,6 +21,10 @@ public class ExMult extends Expression {
     Collections.addAll(this.terms, terms);
   }
 
+  private ExMult(ArrayList<Expression> terms) {
+    this.terms = terms;
+  }
+  
   @Override
   public double eval(Map<String, Double> varValues) {
     double result = 0;
@@ -28,6 +32,21 @@ public class ExMult extends Expression {
       result *= term.eval(varValues);
     }
     return result;
+  }
+  
+  @Override
+  public Expression sort() {
+    ArrayList<Expression> newTerms = new ArrayList<Expression>();
+    for (Expression term : terms) {
+      newTerms.add(term.sort());
+    }
+    Collections.sort(newTerms, new Comparator<Expression>() {
+      @Override
+      public int compare(Expression o1, Expression o2) {
+        return o1.toString().compareTo(o2.toString());
+      }
+    });
+    return new ExMult(newTerms);
   }
   
   @Override

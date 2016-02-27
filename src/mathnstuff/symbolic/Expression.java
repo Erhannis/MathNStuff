@@ -5,8 +5,10 @@
  */
 package mathnstuff.symbolic;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Stack;
 import mathnstuff.DoubleFunction;
 import mathnstuff.NVector;
 
@@ -24,8 +26,74 @@ public abstract class Expression {
     return null;
   }
   
-//  public abstract Expression sort();
+  /**
+   * Parses an expression in prefix notation.
+   * (+ a b c...)
+   * (* a b c...)
+   * (^ a b)
+   * where a, b, c, etc. are a constant or variable name.  Things which can be
+   * parsed as doubles are, otherwise they are parsed as variable names.  Careful.
+   * Examples:
+   * (^ (+ (^ a 2) (^ b 2)) 0.5)
+   * (+ (* a b) (* 2 a c) (* b c))
+   * @param expr
+   * @return 
+   */
+  public static Expression parsePrefix(String expr) {
+    String[] tokenList = expr.replaceAll("\\)", " )").split(" ");
+    Stack<String> tokens = new Stack<String>();
+    for (int i = tokenList.length - 1; i >= 0; i--) {
+      String token = tokenList[i];
+      if (token.isEmpty()) {
+        continue;
+      }
+      tokens.push(token);
+    }
+    return parsePrefixSub(tokens);
+  }
+  
+  private static Expression parsePrefixSub(Stack<String> tokens) {
+    String token = tokens.pop();
+    if ("(+".equals(token)) {
+      Expression sub = parsePrefixSub(tokens);
+      ExAdd newExp = new ExAdd();
+      while (sub != null) {
+        newExp.terms.add(sub); // A little non-kosher.  But should work, for now.
+        sub = parsePrefixSub(tokens);
+      }
+      return newExp;
+    } else if ("(*".equals(token)) {
+      Expression sub = parsePrefixSub(tokens);
+      ExMult newExp = new ExMult();
+      while (sub != null) {
+        newExp.terms.add(sub); // A little non-kosher.  But should work, for now.
+        sub = parsePrefixSub(tokens);
+      }
+      return newExp;
+    } else if ("(^".equals(token)) {
+      Expression a = parsePrefixSub(tokens);
+      Expression b = parsePrefixSub(tokens);
+      String endPar = tokens.pop();
+      if (!")".equals(endPar)) {
+        throw new IllegalArgumentException("pow expression expected end par, got \"" + endPar + "\"");
+      }
+      return new ExPow(a, b);
+    } else if (")".equals(token)) {
+      return null;
+    } else {
+      try {
+        double value = Double.parseDouble(token);
+        return new ExConstant(value);
+      } catch (NumberFormatException nfe) {
+        return new ExVarScalar(token);
+      }
+    }
+  }
+  
+  public abstract Expression sort();
 
+//  public abstract Expression collapse();
+  
   /**
    * I'll have to change it once I introduce vectors, etc.
    * @param varValues

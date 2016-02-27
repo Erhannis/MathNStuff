@@ -24,6 +24,12 @@ public class ExConstant extends Expression {
   }
   
   @Override
+  public Expression sort() {
+    // Could maybe just return `this`
+    return new ExConstant(value);
+  }
+  
+  @Override
   public String toString() {
     return Double.toString(value);
   }

@@ -5,8 +5,10 @@
  */
 package mathnstuff.symbolic;
 
+import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -21,6 +23,10 @@ public class ExAdd extends Expression {
     Collections.addAll(this.terms, terms);
   }
 
+  private ExAdd(ArrayList<Expression> terms) {
+    this.terms = terms;
+  }
+  
   @Override
   public double eval(Map<String, Double> varValues) {
     double result = 0;
@@ -31,7 +37,23 @@ public class ExAdd extends Expression {
   }
 
   @Override
+  public Expression sort() {
+    ArrayList<Expression> newTerms = new ArrayList<Expression>();
+    for (Expression term : terms) {
+      newTerms.add(term.sort());
+    }
+    Collections.sort(newTerms, new Comparator<Expression>() {
+      @Override
+      public int compare(Expression o1, Expression o2) {
+        return o1.toString().compareTo(o2.toString());
+      }
+    });
+    return new ExAdd(newTerms);
+  }
+
+  @Override
   public String toString() {
+    //TODO Cache answer/set up change flags (all over)
     if (terms.size() > 0) {
       StringBuilder sb = new StringBuilder();
       sb.append("(" + terms.get(0).toString() + ")");

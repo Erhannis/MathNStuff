@@ -24,6 +24,12 @@ public class ExVarScalar extends Expression {
   }
   
   @Override
+  public Expression sort() {
+    // Could maybe just return `this`
+    return new ExVarScalar(name);
+  }
+  
+  @Override
   public String toString() {
     return name;
   }

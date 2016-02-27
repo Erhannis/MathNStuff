@@ -26,6 +26,11 @@ public class ExPow extends Expression {
   }
   
   @Override
+  public Expression sort() {
+    return new ExPow(base.sort(), exp.sort());
+  }
+  
+  @Override
   public String toString() {
     return "(" + base + ")^(" + exp + ")";
   }
