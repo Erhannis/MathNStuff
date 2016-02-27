@@ -149,6 +149,122 @@ public class MeMath {
         return roughGradient(f, dims, DEFAULT_DELTA_X);
     }
     
+    public static Function<Matrix> roughHessian(final DoubleFunction f, final int dims, final double h, final boolean assumeSymmetric) {
+      final DoubleFunction[][] dfs = new DoubleFunction[dims][dims];
+      if (assumeSymmetric) {
+        for (int i = 0; i < dims; i++) {
+          for (int j = i; j < dims; j++) {
+            DoubleFunction df = roughPartial(roughPartial(f, i, h), j, h);
+            dfs[i][j] = df;
+            if (i != j) {
+              dfs[j][i] = df;
+            }
+          }
+        }
+      } else {
+        for (int i = 0; i < dims; i++) {
+          for (int j = 0; j < dims; j++) {
+            dfs[i][j] = roughPartial(roughPartial(f, i, h), j, h);
+          }
+        }
+      }
+      return new Function<Matrix>() {
+        @Override
+        public Matrix evaluate(NVector x) {
+          Matrix result = new Matrix(dims, dims);
+          if (assumeSymmetric) {
+            for (int i = 0; i < dims; i++) {
+              for (int j = i; j < dims; j++) {
+                double value = dfs[i][j].evaluate(x);
+                result.val[i][j] = value;
+                if (i != j) {
+                  result.val[j][i] = value;
+                }
+              }
+            }
+          } else {
+            for (int i = 0; i < dims; i++) {
+              for (int j = 0; j < dims; j++) {
+                result.val[i][j] = dfs[i][j].evaluate(x);
+              }
+            }
+          }
+          return result;
+        }
+      };
+    }
+
+    public static Function<Matrix> roughHessian(final DoubleFunction f, final int dims) {
+      return roughHessian(f, dims, DEFAULT_DELTA_X, true);
+    }
+    
+    /**
+     * Uses Newton's method (with approximated derivatives) to find a zero of the function.
+     * @param f Function
+     * @param dims f goes from R_dims to R_1
+     * @param stepFactor Factor to apply to the step length
+     * @param h Step size for approximating derivatives
+     * @param acceptableError If it gets within this far of zero, stop
+     * @return 
+     */
+    public static NVector newtonsMethod(final DoubleFunction f, final int dims, final NVector start, final double stepFactor, final double h, final double acceptableError) throws Exception {
+      Function<Matrix> hessianFunc = roughHessian(f, dims, h, false);
+      Function<NVector> gradientFunc = roughGradient(f, dims, h);
+      NVector x = start.copy();
+      double score = f.evaluate(x);
+      double oldScore = score + (10 * acceptableError);
+      
+      int count = 0;
+      while (Math.abs(score - oldScore) > acceptableError) {  //TODO Kinda wrong for small step size
+        oldScore = score;
+        System.out.println("step " + (count++) + " " + score + " " + x);
+        x = x.minusB(hessianFunc.evaluate(x).invert().multV(gradientFunc.evaluate(x)).multS(stepFactor));
+        score = f.evaluate(x);
+      }
+      
+      return x;
+    }
+    
+    public static NVector newtonsMethod(final DoubleFunction f, final int dims) throws Exception {
+      return newtonsMethod(f, dims, new NVector(new double[]{1, 1}), 0.5, DEFAULT_DELTA_X, DEFAULT_DELTA_X);
+      //return newtonsMethod(f, dims, NVector.zero(dims), 0.5, DEFAULT_DELTA_X, DEFAULT_DELTA_X);
+    }
+    
+    public static NVector gradientDescent(final DoubleFunction f, final int dims, final NVector start, double stepFactor, final double h, final double acceptableError) {
+      boolean adaptive = (stepFactor == 0);
+      if (adaptive) {
+        //TODO Tends not to actually converge...still can be helpful for getting near the answer from far away
+        stepFactor = 0.5;
+      }
+      Function<NVector> gradientFunc = roughGradient(f, dims, h);
+      NVector x = start.copy();
+      double score = f.evaluate(x);
+      double oldScore = score + (10 * acceptableError);
+      
+      int count = 0;
+      while (Math.abs(score - oldScore) > acceptableError) {  //TODO Kinda wrong for small step size
+        oldScore = score;
+        if (count % 1000 == 0) {
+          System.out.println("step " + (count) + " " + score + " " + x);
+        }
+        count++;
+        x = x.minusB(gradientFunc.evaluate(x).multS(stepFactor));
+        score = f.evaluate(x);
+        if (adaptive) {
+          //stepFactor = Math.min(0.5, Math.abs(score / (oldScore - score)) / 10);
+          stepFactor = Math.min(10, Math.abs(score / (oldScore - score)) / 10);
+        }
+      }
+      System.out.println("done " + (count++) + " " + score + " " + x);
+      
+      return x;
+    }
+
+    public static NVector gradientDescent(final DoubleFunction f, final int dims) throws Exception {
+      return gradientDescent(f, dims, new NVector(new double[]{1, 1}), 0, DEFAULT_DELTA_X, DEFAULT_DELTA_X);
+      //return gradientDescent(f, dims, NVector.zero(dims), 0.5, DEFAULT_DELTA_X, DEFAULT_DELTA_X);
+    }
+    
     public static Network netplotDFunction(DoubleFunction df, int points, double xMin, double xMax, double xScaling, double yScaling) {
         Network net = new Network();
         double xStep;
