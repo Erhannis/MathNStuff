@@ -27,7 +27,7 @@ public class ExMult extends Expression {
   
   @Override
   public double eval(Map<String, Double> varValues) {
-    double result = 0;
+    double result = 1;
     for (Expression term : terms) {
       result *= term.eval(varValues);
     }
@@ -43,7 +43,18 @@ public class ExMult extends Expression {
     Collections.sort(newTerms, new Comparator<Expression>() {
       @Override
       public int compare(Expression o1, Expression o2) {
-        return o1.toString().compareTo(o2.toString());
+        // I want constants in front
+        if (o1 instanceof ExConstant) {
+          if (o2 instanceof ExConstant) {
+            return o1.toString().compareTo(o2.toString());
+          } else {
+            return -1;
+          }
+        } else if (o2 instanceof ExConstant) {
+          return 1;
+        } else {
+          return o1.toString().compareTo(o2.toString());
+        }
       }
     });
     return new ExMult(newTerms);
