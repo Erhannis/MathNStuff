@@ -27,15 +27,13 @@ public class ExDiv extends Expression {
   
   @Override
   public Expression sort() {
-    // Could maybe just return `this`
     return new ExDiv(top.sort(), bot.sort());
   }
 
   @Override
   public Expression collapse() {
-    // Could maybe just return `this`
     //TODO Maybe something I could do, here
-    return new ExDiv(top.sort(), bot.sort());
+    return new ExDiv(top.collapse(), bot.collapse());
   }
 
   /**
@@ -44,7 +42,7 @@ public class ExDiv extends Expression {
    */
   @Override
   public Expression reduce() {
-    return new ExDiv(top.sort(), bot.sort());
+    return new ExDiv(top.reduce(), bot.reduce());
   }
 
   @Override

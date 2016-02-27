@@ -27,18 +27,16 @@ public class ExPow extends Expression {
   
   @Override
   public Expression sort() {
-    // Could maybe just return `this`
     return new ExPow(base.sort(), exp.sort());
   }
 
   @Override
   public Expression collapse() {
-    // Could maybe just return `this`
-    return new ExPow(base.sort(), exp.sort());
+    return new ExPow(base.collapse(), exp.collapse());
   }
 
   /**
-   * If the power is an integer constant, say, 0 < n < 10, turns into a literal product.
+   * If the power is an integer constant, say, 0 < n < 5, turns into a literal product.
    * Also, if base and exp are constants, perform calculation.
    * //TODO Could turn ^-1 into div.
    * //TODO Could turn (0.5a)^2 into (0.5^2)(a^2)
@@ -53,7 +51,7 @@ public class ExPow extends Expression {
         ExConstant b = (ExConstant)newEx.base;
         return new ExConstant(Math.pow(b.value, e.value));
       } else {
-        if (((int)e.value) == e.value && e.value > 0 && e.value < 10) {
+        if (((int)e.value) == e.value && e.value > 0 && e.value < 5) {
           if (e.value == 1) {
             return newEx.base;
           } else {

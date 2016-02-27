@@ -5,9 +5,9 @@
  */
 package mathnstuff.symbolic;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 import java.util.Stack;
 import mathnstuff.DoubleFunction;
 import mathnstuff.NVector;
@@ -137,6 +137,86 @@ public abstract class Expression {
       return false;
     } else {
       return true;
+    }
+  }
+  
+  private static Random rand = new Random();
+  
+  private static synchronized double nextDouble() {
+    return rand.nextDouble();
+  }
+  
+  private static synchronized int nextInt(int n) {
+    return rand.nextInt(n);
+  }
+  
+  private static synchronized int nextTaper(double rate) {
+    int i = 0;
+    while (nextDouble() < rate) {
+      i++;
+    }
+    return i;
+  }
+  
+  private static final String[] VAR_NAMES = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"};
+  
+  /**
+   * Generates a kindof-random expression.
+   * @return 
+   */
+  public static Expression randomExpression(int level) {
+    double r = nextDouble();
+    if (level > 0 && (1.0 / level) < r) {
+      // Leaf
+      switch (nextInt(2)) {
+        case 0:
+          // Constant
+          int value = nextInt(20) - 10;
+          if (value >= 0) {
+            // Zeros usually aren't interesting in an expression, and often break things
+            value++;
+          }
+          return new ExConstant(value);
+        case 1:
+        default:
+          // Variable
+          int i = Math.min(VAR_NAMES.length - 1, nextTaper(0.5));
+          String varName = VAR_NAMES[i];
+          return new ExVarScalar(varName);
+      }
+    } else {
+      // Branch
+      switch (nextInt(4)) {
+        case 0:
+        {
+          // Add
+          int count = nextInt(10 - 2) + 2;
+          Expression[] exprs = new Expression[count];
+          for (int i = 0; i < count; i++) {
+            exprs[i] = randomExpression(level + 1);
+          }
+          return new ExAdd(exprs);
+        }
+        case 1:
+        {
+          // Mult
+          int count = nextInt(10 - 2) + 2;
+          Expression[] exprs = new Expression[count];
+          for (int i = 0; i < count; i++) {
+            exprs[i] = randomExpression(level + 1);
+          }
+          return new ExAdd(exprs);
+        }
+        case 2:
+        {
+          return new ExPow(randomExpression(level + 1), randomExpression(level + 1));
+        }
+        case 3:
+        default:
+        {
+          return new ExDiv(randomExpression(level + 1), randomExpression(level + 1));
+        }
+      }
     }
   }
 }
