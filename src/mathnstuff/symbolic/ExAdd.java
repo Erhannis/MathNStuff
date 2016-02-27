@@ -6,7 +6,9 @@
 package mathnstuff.symbolic;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -15,8 +17,17 @@ import java.util.List;
 public class ExAdd extends Expression {
   public ArrayList<Expression> terms = new ArrayList<Expression>();
   
-  public ExAdd(List<Expression> terms) {
-    this.terms.addAll(terms);
+  public ExAdd(Expression... terms) {
+    Collections.addAll(this.terms, terms);
+  }
+
+  @Override
+  public double eval(Map<String, Double> varValues) {
+    double result = 0;
+    for (Expression term : terms) {
+      result += term.eval(varValues);
+    }
+    return result;
   }
 
   @Override

@@ -11,20 +11,22 @@ import java.util.Map;
  *
  * @author erhannis
  */
-public class ExConstant extends Expression {
-  public double value = 0;
+public class ExPow extends Expression {
+  public Expression base;
+  public Expression exp;
   
-  public ExConstant(double value) {
-    this.value = value;
+  public ExPow(Expression base, Expression exp) {
+    this.base = base;
+    this.exp = exp;
   }
 
   @Override
   public double eval(Map<String, Double> varValues) {
-    return value;
+    return Math.pow(base.eval(varValues), exp.eval(varValues));
   }
   
   @Override
   public String toString() {
-    return Double.toString(value);
+    return "(" + base + ")^(" + exp + ")";
   }
 }

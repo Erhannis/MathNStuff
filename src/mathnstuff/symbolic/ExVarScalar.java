@@ -5,19 +5,26 @@
  */
 package mathnstuff.symbolic;
 
+import java.util.Map;
+
 /**
  *
  * @author erhannis
  */
 public class ExVarScalar extends Expression {
-  public double value = 0;
+  public String name;
   
-  public ExVarScalar(double value) {
-    this.value = value;
+  public ExVarScalar(String name) {
+    this.name = name;
   }
 
   @Override
+  public double eval(Map<String, Double> varValues) {
+    return varValues.get(name);
+  }
+  
+  @Override
   public String toString() {
-    return Double.toString(value);
+    return name;
   }
 }
