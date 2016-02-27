@@ -5,12 +5,12 @@
  */
 package mathnstuff.symbolic;
 
-import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  *
@@ -61,6 +61,65 @@ public class ExAdd extends Expression {
       } else {
         newEx.terms.add(term);
       }
+    }
+    return newEx;
+  }
+
+  /**
+   * Combines scalars, combines like terms (may be buggy).
+   * If only one term, returns that.
+   * //TODO Could maybe reduce added fractions
+   * @return 
+   */
+  @Override
+  public Expression reduce() {
+    ExAdd collapsed = (ExAdd)this.collapse();
+    ExAdd newEx = new ExAdd();
+    ExConstant offset = new ExConstant(0);
+    HashMap<String, Double> coefficients = new HashMap<String, Double>();
+    HashMap<String, Expression> uniqExpressions = new HashMap<String, Expression>();
+    for (Expression term : collapsed.terms) {
+      term = term.collapse(); // TODO May be very redundant
+      term = term.reduce();
+      if (term instanceof ExConstant) {
+        offset.value += ((ExConstant)term).value;
+      } else if (term instanceof ExMult) {
+        ExMult mTerm = (ExMult)term;
+        String sig = mTerm.toStringNoFactor();
+        double factor = mTerm.getFactor();
+        Double oldCoef = coefficients.get(sig);
+        if (oldCoef != null) {
+          factor += oldCoef;
+        } else {
+          uniqExpressions.put(sig, mTerm.getWithoutFactor());
+        }
+        coefficients.put(sig, factor);
+      } else {
+        String sig = term.toString();
+        double factor = 1;
+        Double oldCoef = coefficients.get(sig);
+        if (oldCoef != null) {
+          factor += oldCoef;
+        } else {
+          uniqExpressions.put(sig, term);
+        }
+        coefficients.put(sig, factor);
+      }
+    }
+    if (offset.value != 0) {
+      newEx.terms.add(offset);
+    }
+    for (Entry<String, Expression> entry : uniqExpressions.entrySet()) {
+      if (coefficients.get(entry.getKey()) == 0) {
+        // Nothing
+      } else if (coefficients.get(entry.getKey()) == 1) {
+        newEx.terms.add(entry.getValue());
+      } else {
+        newEx.terms.add(new ExMult(new ExConstant(coefficients.get(entry.getKey())), entry.getValue()));
+      }
+    }
+    if (newEx.terms.size() == 1) {
+      return newEx.terms.get(0);
     }
     return newEx;
   }

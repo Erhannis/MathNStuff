@@ -28,7 +28,13 @@ public class ExVarScalar extends Expression {
     // Could maybe just return `this`
     return new ExVarScalar(name);
   }
-  
+
+  @Override
+  public Expression reduce() {
+    // Could maybe just return `this`
+    return new ExVarScalar(name);
+  }
+
   @Override
   public Expression collapse() {
     // Could maybe just return `this`

@@ -36,7 +36,43 @@ public class ExPow extends Expression {
     // Could maybe just return `this`
     return new ExPow(base.sort(), exp.sort());
   }
-  
+
+  /**
+   * If the power is an integer constant, say, 0 < n < 10, turns into a literal product.
+   * Also, if base and exp are constants, perform calculation.
+   * //TODO Could turn ^-1 into div.
+   * //TODO Could turn (0.5a)^2 into (0.5^2)(a^2)
+   * @return 
+   */
+  @Override
+  public Expression reduce() {
+    ExPow newEx = new ExPow(base.collapse().reduce(), exp.collapse().reduce());
+    if (newEx.exp instanceof ExConstant) {
+      ExConstant e = (ExConstant)newEx.exp;
+      if (newEx.base instanceof ExConstant) {
+        ExConstant b = (ExConstant)newEx.base;
+        return new ExConstant(Math.pow(b.value, e.value));
+      } else {
+        if (((int)e.value) == e.value && e.value > 0 && e.value < 10) {
+          if (e.value == 1) {
+            return newEx.base;
+          } else {
+            ExMult newMult = new ExMult();
+            for (int i = 0; i < e.value; i++) {
+              //TODO This is a little sketchy, adding references, but so far all this code makes copies, rather than in place.
+              newMult.terms.add(newEx.base);
+            }
+            return newMult;
+          }
+        } else {
+          return newEx;
+        }
+      }
+    } else {
+      return newEx;
+    }
+  }
+
   @Override
   public String toString() {
     return "(" + base + ")^(" + exp + ")";

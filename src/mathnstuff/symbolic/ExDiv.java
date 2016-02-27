@@ -11,38 +11,44 @@ import java.util.Map;
  *
  * @author erhannis
  */
-public class ExConstant extends Expression {
-  public double value = 0;
+public class ExDiv extends Expression {
+  public Expression top;
+  public Expression bot;
   
-  public ExConstant(double value) {
-    this.value = value;
+  public ExDiv(Expression top, Expression bot) {
+    this.top = top;
+    this.bot = bot;
   }
 
   @Override
   public double eval(Map<String, Double> varValues) {
-    return value;
+    return top.eval(varValues) / bot.eval(varValues);
   }
   
   @Override
   public Expression sort() {
     // Could maybe just return `this`
-    return new ExConstant(value);
-  }
-  
-  @Override
-  public Expression collapse() {
-    // Could maybe just return `this`
-    return new ExConstant(value);
+    return new ExDiv(top.sort(), bot.sort());
   }
 
   @Override
-  public Expression reduce() {
+  public Expression collapse() {
     // Could maybe just return `this`
-    return new ExConstant(value);
+    //TODO Maybe something I could do, here
+    return new ExDiv(top.sort(), bot.sort());
+  }
+
+  /**
+   * //TODO Could turn constant divisors into factors....
+   * @return 
+   */
+  @Override
+  public Expression reduce() {
+    return new ExDiv(top.sort(), bot.sort());
   }
 
   @Override
   public String toString() {
-    return Double.toString(value);
+    return "(" + top + ")/(" + bot + ")";
   }
 }

@@ -95,6 +95,14 @@ public abstract class Expression {
   public abstract Expression collapse();
   
   /**
+   * Attempts to reduce and simplify the expression.  This is pretty open-ended.
+   * In actuality, it may make things more complicated, by multiplying things out
+   * and actually squaring things, etc.
+   * @return 
+   */
+  public abstract Expression reduce();
+  
+  /**
    * I'll have to change it once I introduce vectors, etc.
    * @param varValues
    * @return 
