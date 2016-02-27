@@ -27,6 +27,13 @@ public class ExPow extends Expression {
   
   @Override
   public Expression sort() {
+    // Could maybe just return `this`
+    return new ExPow(base.sort(), exp.sort());
+  }
+
+  @Override
+  public Expression collapse() {
+    // Could maybe just return `this`
     return new ExPow(base.sort(), exp.sort());
   }
   

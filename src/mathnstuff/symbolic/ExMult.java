@@ -50,6 +50,20 @@ public class ExMult extends Expression {
   }
   
   @Override
+  public Expression collapse() {
+    ExMult newEx = new ExMult();
+    for (Expression term : terms) {
+      term = term.collapse();
+      if (term instanceof ExMult) {
+        newEx.terms.addAll(((ExMult)term).terms);
+      } else {
+        newEx.terms.add(term);
+      }
+    }
+    return newEx;
+  }
+  
+  @Override
   public String toString() {
     if (terms.size() > 0) {
       StringBuilder sb = new StringBuilder();

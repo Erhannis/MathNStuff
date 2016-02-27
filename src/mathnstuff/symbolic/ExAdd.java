@@ -52,6 +52,20 @@ public class ExAdd extends Expression {
   }
 
   @Override
+  public Expression collapse() {
+    ExAdd newEx = new ExAdd();
+    for (Expression term : terms) {
+      term = term.collapse();
+      if (term instanceof ExAdd) {
+        newEx.terms.addAll(((ExAdd)term).terms);
+      } else {
+        newEx.terms.add(term);
+      }
+    }
+    return newEx;
+  }
+
+  @Override
   public String toString() {
     //TODO Cache answer/set up change flags (all over)
     if (terms.size() > 0) {

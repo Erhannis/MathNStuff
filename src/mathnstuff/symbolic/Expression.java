@@ -92,7 +92,7 @@ public abstract class Expression {
   
   public abstract Expression sort();
 
-//  public abstract Expression collapse();
+  public abstract Expression collapse();
   
   /**
    * I'll have to change it once I introduce vectors, etc.

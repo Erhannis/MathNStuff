@@ -30,6 +30,12 @@ public class ExVarScalar extends Expression {
   }
   
   @Override
+  public Expression collapse() {
+    // Could maybe just return `this`
+    return new ExVarScalar(name);
+  }
+  
+  @Override
   public String toString() {
     return name;
   }
