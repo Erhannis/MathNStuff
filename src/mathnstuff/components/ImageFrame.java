@@ -41,8 +41,6 @@ public class ImageFrame extends javax.swing.JFrame {
 
     panelDisplay = new ImagePanel();
 
-    setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-
     org.jdesktop.layout.GroupLayout panelDisplayLayout = new org.jdesktop.layout.GroupLayout(panelDisplay);
     panelDisplay.setLayout(panelDisplayLayout);
     panelDisplayLayout.setHorizontalGroup(
