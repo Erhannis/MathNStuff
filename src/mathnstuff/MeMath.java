@@ -912,6 +912,10 @@ public class MeMath {
     //TODO Might be able to make an optimized version if we know a < c < b
     return Math.abs(c-a) < Math.abs(b-c);
   }
+
+  public static double interpolate(double x, double y, double a) {
+    return x + ((y - x) * a);
+  }
   
     public static class SmallRandom {
       public long randState = System.nanoTime();
