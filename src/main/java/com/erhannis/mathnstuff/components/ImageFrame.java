@@ -4,6 +4,7 @@
  */
 package com.erhannis.mathnstuff.components;
 
+import java.awt.Dimension;
 import java.awt.Image;
 
 /**
@@ -29,6 +30,26 @@ public class ImageFrame extends javax.swing.JFrame {
         ((ImagePanel)panelDisplay).setImage(image);
         panelDisplay.repaint();
     }
+    
+  public double getScale() {
+    return ((ImagePanel)panelDisplay).getScale();
+  }
+
+  public void setScale(double scale) {
+    ((ImagePanel)panelDisplay).setScale(scale);
+  }
+
+  public void zoomOut() {
+    ((ImagePanel)panelDisplay).zoomOut();
+  }
+
+  public void zoomIn() {
+    ((ImagePanel)panelDisplay).zoomIn();
+  }
+
+  public Image getImage() {
+    return ((ImagePanel)panelDisplay).getImage();
+  }
     
     /**
      * This method is called from within the constructor to initialize the form.
