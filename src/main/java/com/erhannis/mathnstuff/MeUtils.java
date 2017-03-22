@@ -721,9 +721,9 @@ public class MeUtils {
      * @return 
      */
     public static int ARGBToInt(double a, double r, double g, double b) {
-        return MeMath.bound((int)(0xFF * a), 0x00, 0xFF) << 24
-             + MeMath.bound((int)(0xFF * r), 0x00, 0xFF) << 16
-             + MeMath.bound((int)(0xFF * g), 0x00, 0xFF) << 8
+        return (MeMath.bound((int)(0xFF * a), 0x00, 0xFF) << 24)
+             + (MeMath.bound((int)(0xFF * r), 0x00, 0xFF) << 16)
+             + (MeMath.bound((int)(0xFF * g), 0x00, 0xFF) << 8)
              + MeMath.bound((int)(0xFF * b), 0x00, 0xFF);
     }
     
