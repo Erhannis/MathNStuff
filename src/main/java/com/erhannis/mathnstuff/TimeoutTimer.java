@@ -30,6 +30,11 @@ public class TimeoutTimer {
   protected AtomicLong mTarget = new AtomicLong(Long.MAX_VALUE);
   //protected long mTarget = Long.MAX_VALUE;
   
+  /**
+   * Assumes daemon.
+   * @param delay
+   * @param runnable 
+   */
   public TimeoutTimer(long delay, Runnable runnable) {
     this(delay, true, runnable);
   }
