@@ -5,29 +5,34 @@
  */
 package com.erhannis.mathnstuff.utils;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Wrapper around a HashMap - key a list of junk to a value.
+ * 
+ * Note that this calls Arrays.asList(keys) whenever you call get or put.
+ * 
  * @author erhannis
  */
 public class ListMap<T, U> {
-  public final HashMap<T[], U> map;
+  public final HashMap<List<T>, U> map;
   
   public ListMap() {
     map = new HashMap<>();
   }
 
-  public ListMap(HashMap<T[], U> map) {
+  public ListMap(HashMap<List<T>, U> map) {
     this.map = map;
   }
   
   public U put(U value, T... keys) {
-    return map.put(keys, value);
+    return map.put(Arrays.asList(keys), value);
   }
   
   public U get(T... keys) {
-    return map.get(keys);
+    return map.get(Arrays.asList(keys));
   }
 
   @Override
