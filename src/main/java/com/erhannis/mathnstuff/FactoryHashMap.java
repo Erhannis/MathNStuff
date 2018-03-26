@@ -17,14 +17,14 @@ import java.util.HashMap;
  * @author MEwer
  */
 public class FactoryHashMap<T, U> extends HashMap<T, U> {
-  private Factory<T[], U> defaultConstructor;
+  private Factory<T, U> defaultConstructor;
   
-  public FactoryHashMap(Factory<T[], U> defaultConstructor) {
+  public FactoryHashMap(Factory<T, U> defaultConstructor) {
     this.defaultConstructor = defaultConstructor;
   }
 
   /**
-   * Warning: will throw a ClassCastException if `key` is not a T[].
+   * Warning: will throw a ClassCastException if `key` is not a T.
    * @param key
    * @return 
    */
@@ -33,7 +33,7 @@ public class FactoryHashMap<T, U> extends HashMap<T, U> {
     if (containsKey(key)) {
       return super.get(key);
     } else {
-      U value = defaultConstructor.construct((T[])key);
+      U value = defaultConstructor.construct((T)key);
       super.put((T)key, value);
       return value;
     }
