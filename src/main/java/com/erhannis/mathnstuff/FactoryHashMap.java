@@ -17,18 +17,23 @@ import java.util.HashMap;
  * @author MEwer
  */
 public class FactoryHashMap<T, U> extends HashMap<T, U> {
-  private Factory<U> defaultConstructor;
+  private Factory<T[], U> defaultConstructor;
   
-  public FactoryHashMap(Factory<U> defaultConstructor) {
+  public FactoryHashMap(Factory<T[], U> defaultConstructor) {
     this.defaultConstructor = defaultConstructor;
   }
 
+  /**
+   * Warning: will throw a ClassCastException if `key` is not a T[].
+   * @param key
+   * @return 
+   */
   @Override
   public U get(Object key) {
     if (containsKey(key)) {
       return super.get(key);
     } else {
-      U value = defaultConstructor.construct();
+      U value = defaultConstructor.construct((T[])key);
       super.put((T)key, value);
       return value;
     }

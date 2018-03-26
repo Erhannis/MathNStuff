@@ -12,6 +12,7 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Set;
 import com.erhannis.mathnstuff.utils.Factory;
+import org.apache.commons.lang3.ObjectUtils.Null;
 
 /**
  * Sparsely stores elements of an array.  I'm not sure how quick it is.
@@ -21,7 +22,7 @@ import com.erhannis.mathnstuff.utils.Factory;
  */
 public class SparseArray<T> implements Serializable {
   private int dims;
-  private Factory<T> defaultConstructor;
+  private Factory<Null, T> defaultConstructor;
   
   private HashMap<FungibleCoords, T> data = new HashMap<FungibleCoords, T>();
   
@@ -76,7 +77,7 @@ public class SparseArray<T> implements Serializable {
     }
   }
   
-  public SparseArray(int dims, Factory<T> defaultConstructor) {
+  public SparseArray(int dims, Factory<Null, T> defaultConstructor) {
     this.dims = dims;
     this.defaultConstructor = defaultConstructor;
   }
@@ -88,7 +89,7 @@ public class SparseArray<T> implements Serializable {
   public T get(int... coords) {
     T o = data.get(new FungibleCoords(coords));
     if (o == null) {
-      return defaultConstructor.construct();
+      return defaultConstructor.construct(null);
     }
     return o;
   }
