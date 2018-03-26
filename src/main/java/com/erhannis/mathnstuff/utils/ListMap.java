@@ -5,35 +5,29 @@
  */
 package com.erhannis.mathnstuff.utils;
 
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
- * Wrapper around a HashMap - key a set of junk to a value.
- * 
- * Note that this creates a new HashSet whenever you call get or put.
- * 
+ * Wrapper around a HashMap - key a list of junk to a value.
  * @author erhannis
  */
-public class BagMap<T, U> {
-  public final HashMap<Set<T>, U> map;
+public class ListMap<T, U> {
+  public final HashMap<T[], U> map;
   
-  public BagMap() {
+  public ListMap() {
     map = new HashMap<>();
   }
 
-  public BagMap(HashMap<Set<T>, U> map) {
+  public ListMap(HashMap<T[], U> map) {
     this.map = map;
   }
   
   public U put(U value, T... keys) {
-    return map.put(new HashSet<T>(Arrays.asList(keys)), value);
+    return map.put(keys, value);
   }
   
   public U get(T... keys) {
-    return map.get(new HashSet<T>(Arrays.asList(keys)));
+    return map.get(keys);
   }
 
   @Override
@@ -43,9 +37,9 @@ public class BagMap<T, U> {
 
   @Override
   public boolean equals(Object obj) {
-    if (!(obj instanceof BagMap)) {
+    if (!(obj instanceof ListMap)) {
       return false;
     }
-    return this.map.equals(((BagMap)obj).map);
+    return this.map.equals(((ListMap)obj).map);
   }
 }
