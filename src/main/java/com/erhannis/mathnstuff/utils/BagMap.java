@@ -12,7 +12,15 @@ import java.util.HashMap;
  * @author erhannis
  */
 public class BagMap<T, U> {
-  public final HashMap<T[], U> map = new HashMap<>();
+  public final HashMap<T[], U> map;
+  
+  public BagMap() {
+    map = new HashMap<>();
+  }
+
+  public BagMap(HashMap<T[], U> map) {
+    this.map = map;
+  }
   
   public U put(U value, T... keys) {
     return map.put(keys, value);
