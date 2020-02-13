@@ -38,4 +38,16 @@ public class FactoryHashMap<T, U> extends HashMap<T, U> {
       return value;
     }
   }
+  
+  /**
+   * Update the value via the function.  Return the old value.
+   * @param key
+   * @param func
+   * @return 
+   */
+  public U apply(T key, TToTFunction<U, U> func) {
+    U val = this.get(key);
+    this.put(key, func.evaluate(val));
+    return val;
+  }
 }
