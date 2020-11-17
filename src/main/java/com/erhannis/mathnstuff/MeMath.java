@@ -510,14 +510,15 @@ public class MeMath {
      * Arbitrary n.
      * @param u 
      */
-    public static void vectorNormalizeIP(double[] u) {
+    public static double[] vectorNormalizeIP(double[] u) {
         double length = vectorLength(u);
         if (length == 0) {
-            return;
+            return u;
         }
         for (int i = 0; i < u.length; i++) {
             u[i] /= length;
-        }        
+        }
+        return u;
     }
 
     /**
@@ -628,10 +629,11 @@ public class MeMath {
         return vectorScale(v, dotProduct(v, u) / sqr(vLen));
     }
     
-    public static void vectorScaleIP(double[] u, double alpha) {
+    public static double[] vectorScaleIP(double[] u, double alpha) {
         for (int i = 0; i < u.length; i++) {
             u[i] *= alpha;
         }
+        return u;
     }
 
     public static double[] vectorScale(double[] u, double alpha) {
