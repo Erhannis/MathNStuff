@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Random;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.codec.digest.UnixCrypt;
@@ -789,6 +790,21 @@ public class MeUtils {
      */
     public static int hashInts(int oldHash, int newValue) {
       return smear(oldHash + smear(newValue));
+    }
+    
+    /**
+     * Removes and returns an arbitrary item from the set.
+     * Probably not super efficient, and vulnerable to concurrent modification
+     * errors if you're doing threading.  (It uses an iterator.)
+     * @param <T>
+     * @param set
+     * @return 
+     */
+    public static <T> T pop(Set<T> set) {
+      Iterator<T> it = set.iterator();
+      T t = it.next();
+      it.remove();
+      return t;
     }
     
     //<editor-fold defaultstate="collapsed" desc="Beautiful Unsafe things from mishadoff.com">
