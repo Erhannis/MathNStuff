@@ -8,6 +8,8 @@ package com.erhannis.mathnstuff;
 
 import java.awt.geom.Rectangle2D;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -805,6 +807,22 @@ public class MeUtils {
       T t = it.next();
       it.remove();
       return t;
+    }
+    
+    public static void writeToFileOrDie(String filename, String text) {
+      try {
+        writeToFile(filename, text);
+      } catch (IOException ex) {
+        throw new RuntimeException(ex);
+      }
+    }
+    
+    public static void writeToFile(String filename, String text) throws IOException {
+      File f = new File(filename);
+      FileWriter fw = new FileWriter(f);
+      fw.append(text);
+      fw.flush();
+      fw.close();
     }
     
     //<editor-fold defaultstate="collapsed" desc="Beautiful Unsafe things from mishadoff.com">
