@@ -573,6 +573,15 @@ public class MeMath {
     public static double vectorLength(double[] u) {
         return Math.sqrt(dotProduct(u, u));
     }
+
+    /**
+     * Arbitrary n.
+     * @param u
+     * @return 
+     */
+    public static double vectorLengthSqr(double[] u) {
+        return dotProduct(u, u);
+    }
     
     /**
      * Arbitrary n.  Returns pi/2 if either vector has length 0.
