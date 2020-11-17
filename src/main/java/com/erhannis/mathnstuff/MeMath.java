@@ -650,6 +650,13 @@ public class MeMath {
         return result;
     }
 
+    public static double[] vectorAddIP(double[] u, double[] v) {
+        for (int i = 0; i < u.length; i++) {
+            u[i] = u[i] + v[i];
+        }
+        return u;
+    }
+
     public static int[] vectorAdd(int[] u, int[] v) {
         int[] result = new int[u.length];
         for (int i = 0; i < u.length; i++) {
@@ -658,6 +665,13 @@ public class MeMath {
         return result;
     }
 
+    public static int[] vectorAddIP(int[] u, int[] v) {
+        for (int i = 0; i < u.length; i++) {
+            u[i] = u[i] + v[i];
+        }
+        return u;
+    }
+    
     public static double vectorDistance(int[] u, int[] v) {
         double result = 0;
         for (int i = 0; i < u.length; i++) {
@@ -702,6 +716,46 @@ public class MeMath {
             result[i] = u[i] - v[i];
         }
         return result;
+    }
+
+    /**
+     * u = u - v
+     * @param u
+     * @param v
+     * @return 
+     */
+    public static double[] vectorSubtractIP(double[] u, double[] v) {
+        for (int i = 0; i < u.length; i++) {
+            u[i] = u[i] - v[i];
+        }
+        return u;
+    }
+
+    /**
+     * u - v
+     * @param u
+     * @param v
+     * @return 
+     */
+    public static int[] vectorSubtract(int[] u, int[] v) {
+        int[] result = new int[u.length];
+        for (int i = 0; i < u.length; i++) {
+            result[i] = u[i] - v[i];
+        }
+        return result;
+    }
+
+    /**
+     * u = u - v
+     * @param u
+     * @param v
+     * @return 
+     */
+    public static int[] vectorSubtractIP(int[] u, int[] v) {
+        for (int i = 0; i < u.length; i++) {
+            u[i] = u[i] - v[i];
+        }
+        return u;
     }
     
     /**
