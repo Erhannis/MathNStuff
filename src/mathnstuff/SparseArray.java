@@ -85,9 +85,14 @@ public class SparseArray<T> implements Serializable {
     return dims;
   }
   
-  public T get(int... coords) {
-    T o = data.get(new FungibleCoords(coords));
+  public T get(boolean persist, int... coords) {
+    FungibleCoords fc = new FungibleCoords(coords);
+    T o = data.get(fc);
     if (o == null) {
+      o = defaultConstructor.construct();
+      if (persist) {
+          data.put(fc, o);
+      }
       return defaultConstructor.construct();
     }
     return o;
