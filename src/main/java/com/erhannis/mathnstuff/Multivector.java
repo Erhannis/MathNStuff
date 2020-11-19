@@ -57,7 +57,25 @@ package com.erhannis.mathnstuff;
    </code>
  * <br/>
  * One of the things I notice from this is that in working through the set of
- * geometric products from left to right, the leftmost item starts as a 
+ * geometric products from left to right, the leftmost item starts as a <br/>
+ * <br/>
+ * Also, seems like with unit vector `a`, and some vector `b`, `aba` is like,
+ * an inversion of `b` through the line shot by `a`.  So like, if `a` is the
+ * x-axis, the x-component of `b` will not change, but the other two will *-1.
+ * <br/><br/>
+ * Seems like with a unit bivector `a`, `aba` does similarly to a unit vector -
+ * it reflects `b`, but through the plane I believe `a` describes.  So like,
+ * e12 represents the xy plane, e31 represents the xz plane, and e23 represents
+ * the yz plane.<br/>
+ * Careful!  I got weird results when I tried to construct a bivector out of
+ * non-perpendicular or non-unit vectors.  If I took the outer product of the
+ * two vectors and "normalized" it (normalizing the bivector components the
+ * same as I would the components of a normal vector - dunno if that's kosher),
+ * then it gave the results I expected.
+ * <br/><br/>
+ * Finally, I think with the unit trivector `a`, `aba` inverts `b` through the
+ * origin.
+ * 
  * 
  * @author Erhannis
  */
@@ -251,6 +269,17 @@ public class Multivector {
     public double[] vectorComponent() {
         return new double[]{e1,e2,e3};
     }
+
+    /**
+     * Returns the norm of the bivector portion of this thing.
+     * Note that this is the L2 norm of the bivector components - I don't know
+     * whether such a thing is even legal, but it seems to work for my
+     * purposes.
+     * @return 
+     */
+    public double bivectorNorm() {
+        return Math.sqrt((e12*e12)+(e31*e31)+(e23*e23));
+    }
     
     /**
      * Rotate vector x in the plane of a->b, by the angle separating a->b.
@@ -269,8 +298,127 @@ public class Multivector {
         return b0.mul(a0).mulIP(x0).mulIP(a0).mulIP(b0).vectorComponent();
     }
 
+    /**
+     * Rotate multiple vectors x in the plane of a->b, by the angle separating a->b.
+     * 
+     * Basically a convenience method, saving a few Multivector operations.
+     * 
+     * @param x[COUNT][DIMS]
+     * @param a
+     * @param b
+     * @return 
+     * @see #rotate(double[], double[], double[]) 
+     */
+    public static double[][] rotate(double[][] x, double[] a, double[] b) {
+        Multivector a0 = Multivector.fromVector(a);
+        Multivector b0 = Multivector.fromVector(b);
+        b0.addIP(a0).divSIP(2);
+        b0.mulSIP(1/b0.vectorNorm());
+        Multivector BA = b0.mul(a0);
+        Multivector AB = a0.mulIP(b0); // Kills a0
+        double[][] results = new double[x.length][];
+        for (int i = 0; i < x.length; i++) {
+          Multivector x0 = Multivector.fromVector(x[i]);
+          results[i] = BA.mul(x0).mulIP(AB).vectorComponent(); //TODO There's probably another corner to cut on allocations, here, but eh
+        }
+        return results;
+    }
+
+    /**
+     * Mirror vector x across the plane of a->b.  This function is less 
+     * trustworthy than the rotation functions, because it's based on me messing
+     * with things, plugging in numbers, and going "well, it looks like that
+     * does a reflection".  After writing this, I discovered a significant
+     * oversight, and though I fixed that...you have been warned.
+     * 
+     * @param x
+     * @param a
+     * @param b
+     * @return 
+     */
+    public static double[] mirror(double[] x, double[] a, double[] b) {
+        Multivector x0 = Multivector.fromVector(x);
+        Multivector r = Multivector.fromVector(a).outerIP(Multivector.fromVector(b));
+        r.divSIP(r.bivectorNorm());
+        return r.mul(x0).mulIP(r).vectorComponent();
+    }
+
+    /**
+     * Mirror multiple vectors x across the plane of a->b.  Function is less
+     * verified than rotation.
+     * 
+     * Basically a convenience method, saving a few Multivector operations.
+     * 
+     * @param x[COUNT][DIMS]
+     * @param a
+     * @param b
+     * @return 
+     * @see #mirror(double[], double[], double[]) 
+     */
+    public static double[][] mirror(double[][] x, double[] a, double[] b) {
+        Multivector r = Multivector.fromVector(a).outerIP(Multivector.fromVector(b));
+        r.divSIP(r.bivectorNorm());
+        double[][] results = new double[x.length][];
+        for (int i = 0; i < x.length; i++) {
+          Multivector x0 = Multivector.fromVector(x[i]);
+          results[i] = r.mul(x0).mulIP(r).vectorComponent();
+        }
+        return results;
+    }
+    
     @Override
     public String toString() {
         return "{MV{" + e + "}{" + e1 + "," + e2 + "," + e3 + "}{" + e12 + "," + e31 + "," + e23 + "}{" + e123 + "}}";
     }
 }
+
+/* // More tests
+
+      // Line reflection
+      Multivector x = Multivector.fromVector(0,0,1);
+      Multivector a = Multivector.fromVector(1.1,-0.3,0);
+      Multivector b = Multivector.fromVector(1.1,-0.3,-2);
+      Multivector c = Multivector.fromVector(9,6,1);
+      Multivector d = Multivector.fromVector(-1,-2,-3);
+
+//      System.out.println("a   " + a);
+//      System.out.println("xa " + x.mul(a));
+//      System.out.println("ax " + a.mul(x));
+//      System.out.println("xax " + x.mul(a).mul(x));
+
+      System.out.println("a   " + a);
+      System.out.println("xax " + x.mul(a).mul(x));
+      System.out.println("b   " + b);
+      System.out.println("xbx " + x.mul(b).mul(x));
+      System.out.println("c   " + c);
+      System.out.println("xcx " + x.mul(c).mul(x));
+      System.out.println("a   " + d);
+      System.out.println("xdx " + x.mul(d).mul(x));
+      System.out.println("");
+      System.out.println("a-xax " + a.sub(x.mul(a).mul(x)));
+      System.out.println("b-xbx " + b.sub(x.mul(b).mul(x)));
+      System.out.println("c-xcx " + c.sub(x.mul(c).mul(x)));
+      System.out.println("d-xdx " + d.sub(x.mul(d).mul(x)));
+
+
+
+
+      // Plane reflection ; use above block
+      Multivector x = new Multivector(0,0,0,0,0,1,0,0);
+
+      // Also plane reflection
+      Multivector y = Multivector.fromVector(1,0,1).divSIP(Math.sqrt(2));
+      Multivector z = Multivector.fromVector(0,-1,0);
+      Multivector x = z.mul(y);
+
+      System.out.println("y   " + y);
+      System.out.println("z   " + z);
+
+      // Also plane reflection
+      Multivector a = Multivector.fromVector(1,-3.5,0);
+      Multivector b = Multivector.fromVector(-2,0.5,0);
+      Multivector c = a.outer(b);
+      c.divSIP(c.bivectorNorm());
+
+
+*/
