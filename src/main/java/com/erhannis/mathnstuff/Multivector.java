@@ -293,6 +293,7 @@ public class Multivector {
         Multivector x0 = Multivector.fromVector(x);
         Multivector a0 = Multivector.fromVector(a);
         Multivector b0 = Multivector.fromVector(b);
+        a0.mulSIP(1/a0.vectorNorm());
         b0.addIP(a0).divSIP(2);
         b0.mulSIP(1/b0.vectorNorm());
         return b0.mul(a0).mulIP(x0).mulIP(a0).mulIP(b0).vectorComponent();
@@ -312,6 +313,7 @@ public class Multivector {
     public static double[][] rotate(double[][] x, double[] a, double[] b) {
         Multivector a0 = Multivector.fromVector(a);
         Multivector b0 = Multivector.fromVector(b);
+        a0.mulSIP(1/a0.vectorNorm());
         b0.addIP(a0).divSIP(2);
         b0.mulSIP(1/b0.vectorNorm());
         Multivector BA = b0.mul(a0);
@@ -324,6 +326,53 @@ public class Multivector {
         return results;
     }
 
+    /**
+     * Rotate vector x in the plane of a->b, by the TWICE the angle separating a->b.
+     * It's slightly more in-line with how the rotors want to be used.
+     * May be useful when you're having trouble rotating 180*.
+     * 
+     * @param x
+     * @param a
+     * @param b
+     * @return 
+     */
+    public static double[] rotate2(double[] x, double[] a, double[] b) {
+        Multivector x0 = Multivector.fromVector(x);
+        Multivector a0 = Multivector.fromVector(a);
+        Multivector b0 = Multivector.fromVector(b);
+        a0.mulSIP(1/a0.vectorNorm());
+        b0.mulSIP(1/b0.vectorNorm());
+        return b0.mul(a0).mulIP(x0).mulIP(a0).mulIP(b0).vectorComponent();
+    }
+
+    /**
+     * Rotate multiple vectors x in the plane of a->b, by TWICE the angle separating a->b.
+     * It's slightly more in-line with how the rotors want to be used.
+     * May be useful when you're having trouble rotating 180*.
+     * 
+     * Basically a convenience method, saving a few Multivector operations.
+     * 
+     * @param x[COUNT][DIMS]
+     * @param a
+     * @param b
+     * @return 
+     * @see #rotate(double[], double[], double[]) 
+     */
+    public static double[][] rotate2(double[][] x, double[] a, double[] b) {
+        Multivector a0 = Multivector.fromVector(a);
+        a0.mulSIP(1/a0.vectorNorm());
+        Multivector b0 = Multivector.fromVector(b);
+        b0.mulSIP(1/b0.vectorNorm());
+        Multivector BA = b0.mul(a0);
+        Multivector AB = a0.mulIP(b0); // Kills a0
+        double[][] results = new double[x.length][];
+        for (int i = 0; i < x.length; i++) {
+          Multivector x0 = Multivector.fromVector(x[i]);
+          results[i] = BA.mul(x0).mulIP(AB).vectorComponent(); //TODO There's probably another corner to cut on allocations, here, but eh
+        }
+        return results;
+    }
+    
     /**
      * Mirror vector x across the plane of a->b.  This function is less 
      * trustworthy than the rotation functions, because it's based on me messing
@@ -362,6 +411,45 @@ public class Multivector {
         for (int i = 0; i < x.length; i++) {
           Multivector x0 = Multivector.fromVector(x[i]);
           results[i] = r.mul(x0).mulIP(r).vectorComponent();
+        }
+        return results;
+    }
+
+    /**
+     * Mirror vector x through the line of a.  Equivalent to rotating 180* around a.
+     * This function is less trustworthy than the rotation functions, because
+     * it's based on me messing with things, plugging in numbers, and going
+     * "well, it looks like that does a reflection".
+     * 
+     * @param x
+     * @param a
+     * @return 
+     */
+    public static double[] lineMirror(double[] x, double[] a) {
+        Multivector x0 = Multivector.fromVector(x);
+        Multivector a0 = Multivector.fromVector(MeMath.vectorNormalize(a));
+        return a0.mul(x0).mulIP(a0).vectorComponent();
+    }
+
+    /**
+     * Mirror multiple vectors x through the line of a.  Equivalent to rotating 180* around a.
+     * This function is less trustworthy than the rotation functions, because
+     * it's based on me messing with things, plugging in numbers, and going
+     * "well, it looks like that does a reflection".
+     * 
+     * Basically a convenience method, saving a few Multivector operations.
+     * 
+     * @param x[COUNT][DIMS]
+     * @param a
+     * @return 
+     * @see #lineMirror(double[], double[]) 
+     */
+    public static double[][] lineMirror(double[][] x, double[] a) {
+        Multivector a0 = Multivector.fromVector(MeMath.vectorNormalize(a));
+        double[][] results = new double[x.length][];
+        for (int i = 0; i < x.length; i++) {
+          Multivector x0 = Multivector.fromVector(x[i]);
+          results[i] = a0.mul(x0).mulIP(a0).vectorComponent();
         }
         return results;
     }
