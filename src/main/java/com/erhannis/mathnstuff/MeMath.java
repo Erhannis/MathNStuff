@@ -16,6 +16,7 @@ import java.util.RandomAccess;
 import com.erhannis.networks.Edge;
 import com.erhannis.networks.Network;
 import com.erhannis.networks.Node;
+import java.lang.reflect.Array;
 
 /**
  *
@@ -917,6 +918,86 @@ public class MeMath {
       }
     }
 
+  /**
+   * Assumes `data` is rectangular.  Will probably crash or yield nasal demons otherwise.
+   * @param data
+   * @return 
+   */
+  public static double[][] transpose(double[][] data) {
+    if (data.length == 0) {
+      return new double[0][0];
+    }
+    int A = data.length;
+    int B = data[0].length;
+    double[][] result = new double[B][A];
+    for (int i = 0; i < A; i++) {
+      for (int j = 0; j < B; j++) {
+        result[j][i] = data[i][j];
+      }
+    }
+    return result;
+  }
+
+  /**
+   * Assumes `data` is rectangular.  Will probably crash or yield nasal demons otherwise.
+   * @param data
+   * @return 
+   */
+  public static int[][] transpose(int[][] data) {
+    if (data.length == 0) {
+      return new int[0][0];
+    }
+    int A = data.length;
+    int B = data[0].length;
+    int[][] result = new int[B][A];
+    for (int i = 0; i < A; i++) {
+      for (int j = 0; j < B; j++) {
+        result[j][i] = data[i][j];
+      }
+    }
+    return result;
+  }
+
+  /**
+   * Assumes `data` is rectangular.  Will probably crash or yield nasal demons otherwise.
+   * @param data
+   * @return 
+   */
+  public static float[][] transpose(float[][] data) {
+    if (data.length == 0) {
+      return new float[0][0];
+    }
+    int A = data.length;
+    int B = data[0].length;
+    float[][] result = new float[B][A];
+    for (int i = 0; i < A; i++) {
+      for (int j = 0; j < B; j++) {
+        result[j][i] = data[i][j];
+      }
+    }
+    return result;
+  }
+
+  /**
+   * Assumes `data` is rectangular.  Will probably crash or yield nasal demons otherwise.
+   * @param data
+   * @return 
+   */
+  public static <T> T[][] transpose(T[][] data) {
+    if (data.length == 0) {
+      return (T[][])Array.newInstance(data.getClass().getComponentType().getComponentType(), 0, 0);
+    }
+    int A = data.length;
+    int B = data[0].length;
+    T[][] result = (T[][])Array.newInstance(data.getClass().getComponentType().getComponentType(), B, A);
+    for (int i = 0; i < A; i++) {
+      for (int j = 0; j < B; j++) {
+        result[j][i] = data[i][j];
+      }
+    }
+    return result;
+  }
+  
     /**
      * Throws IllegalArgumentException if signum(f(left)) == signum(f(right)), unless one of
      * them yields 0.
