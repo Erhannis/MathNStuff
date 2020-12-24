@@ -7,25 +7,29 @@ package com.erhannis.mathnstuff.utils;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.PrimitiveIterator;
+import java.util.Spliterator;
 import java.util.function.Consumer;
 import java.util.function.DoubleConsumer;
 import java.util.function.ToDoubleFunction;
+import java.util.stream.DoubleStream;
+import java.util.stream.Stream;
 
 /**
  * Designed for use in describing parameter spaces, like "x in range 0-10 step 0.5, union [3.1415]."
  * Or like, giving a large range, but with particular granularity near the ends.
  * 
- * Calling nextDouble() or hasNext() finishes the set, doing some calculations.
+ * Calling any of {iterator, forEach, spliterator, stream, dstream} finishes the set, doing some calculations.
  * Calling the other functions after that probably won't do much.
  * 
  * Calling a function does a union, by default.  Like, DblSet.ri(0,4).ri(0,0.5,1)
  * should yield [0,0.5,1,2,3,4].
  * @author erhannis
  */
-public class DblSet implements PrimitiveIterator.OfDouble {
+public class DblSet implements Iterable<Double> {
   private transient boolean finished = false;
-  private transient PrimitiveIterator.OfDouble iterator;
+  private transient Stream<Double> stream;
   
   private HashSet<Double> values = new HashSet<>();
 
@@ -133,49 +137,40 @@ public class DblSet implements PrimitiveIterator.OfDouble {
  
   
   private void finish() {
-    iterator = values.stream().mapToDouble(new ToDoubleFunction<Double>() {
+    stream = values.stream().sorted();
+    finished = true;
+  }
+
+  @Override
+  public Iterator<Double> iterator() {
+    if (!finished) {finish();}
+    return stream.iterator();
+  }
+
+  @Override
+  public void forEach(Consumer<? super Double> action) {
+    if (!finished) {finish();}
+    stream.forEach(action);
+  }
+
+  @Override
+  public Spliterator<Double> spliterator() {
+    if (!finished) {finish();}
+    return stream.spliterator();
+  }
+  
+  public Stream<Double> stream() {
+    if (!finished) {finish();}
+    return stream;
+  }
+  
+  public DoubleStream dstream() {
+    if (!finished) {finish();}
+    return stream.mapToDouble(new ToDoubleFunction<Double>() {
       @Override
       public double applyAsDouble(Double t) {
         return t;
       }
-    }).sorted().iterator();
-    finished = true;
-  }
-  
-  @Override
-  public double nextDouble() {
-    if (!finished) {finish();}
-    return iterator.nextDouble();
-  }
-
-  @Override
-  public boolean hasNext() {
-    if (!finished) {finish();}
-    return iterator.hasNext();
-  }
-
-  @Override
-  public void forEachRemaining(DoubleConsumer action) {
-    if (!finished) {finish();}
-    iterator.forEachRemaining(action);
-  }
-
-  @Override
-  public Double next() {
-    if (!finished) {finish();}
-    return iterator.next();
-  }
-
-  @Override
-  public void forEachRemaining(Consumer<? super Double> action) {
-    if (!finished) {finish();}
-    iterator.forEachRemaining(action);
-  }
-
-  @Override
-  public void remove() {
-    if (!finished) {finish();}
-    //TODO Uh.  Shrug?  Could remove from `values`, maybe....
-    iterator.remove();
+    });
   }
 }
