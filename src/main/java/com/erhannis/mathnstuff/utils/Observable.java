@@ -13,6 +13,10 @@ import java.util.function.Consumer;
  * as measured by == .  All methods are synchronized, and do not themselves trigger any
  * asynchronous behavior.  (If the callbacks e.g. start threads or something, that's on them.)
  *
+ * Throwables thrown from any callback are logged, and otherwise ignored.
+ * 
+ * //TODO Could support change event, rather than simple new value
+ * 
  * @author erhannis
  */
 public class Observable<T> {
