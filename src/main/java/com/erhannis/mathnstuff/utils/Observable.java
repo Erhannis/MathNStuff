@@ -48,7 +48,7 @@ public class Observable<T> {
    * @param newValue 
    */
   public synchronized void set(T newValue) {
-    if ((checkIdentical && newValue != value) || (!checkIdentical && Objects.equals(newValue, value))) {
+    if ((checkIdentical && newValue != value) || (!checkIdentical && !Objects.equals(newValue, value))) {
       value = newValue;
       for (Consumer<T> callback : subscriptions.values()) {
         try {

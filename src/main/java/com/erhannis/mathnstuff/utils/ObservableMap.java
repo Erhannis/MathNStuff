@@ -75,7 +75,7 @@ public class ObservableMap<KEY, VAL> {
    */
   public synchronized VAL put(KEY key, VAL newValue) {
     VAL oldVal = null;
-    if (!map.containsKey(key) || ((checkIdentical && newValue != map.get(key)) || (!checkIdentical && Objects.equals(newValue, map.get(key))))) {
+    if (!map.containsKey(key) || ((checkIdentical && newValue != map.get(key)) || (!checkIdentical && !Objects.equals(newValue, map.get(key))))) {
       Change<KEY, VAL> change;
       if (map.containsKey(key)) {
         // So value is different
