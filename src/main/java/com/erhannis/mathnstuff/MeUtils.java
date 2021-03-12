@@ -612,7 +612,7 @@ public class MeUtils {
         byte[] buf = new byte[count];
         int wrote = 0;
         int written = 0;
-        while ((wrote = is.read(buf, written, count-written)) >= 0) {
+        while ((count-written > 0) && ((wrote = is.read(buf, written, count-written)) >= 0)) {
           written += wrote;
         }
         return buf;
