@@ -17,6 +17,9 @@ import java.util.function.Consumer;
  *
  * Throwables thrown from any callback are logged, and otherwise ignored.
  * 
+ * Note: the map is modified BEFORE the callbacks are run, so is should be ok to
+ * call .get() from inside a callback.
+ * 
  * @author erhannis
  */
 public class ObservableMap<KEY, VAL> {
