@@ -608,6 +608,16 @@ public class MeUtils {
         return baos.toByteArray();
     }
     
+    public static byte[] readNBytes(InputStream is, int count) throws IOException {
+        byte[] buf = new byte[count];
+        int wrote = 0;
+        int written = 0;
+        while ((wrote = is.read(buf, written, count-written)) >= 0) {
+          written += wrote;
+        }
+        return buf;
+    }
+
     public static void pipeInputStreamToOutputStream(InputStream is, OutputStream os) throws IOException {
         byte[] buf = new byte[256];
         int wrote = 0;
