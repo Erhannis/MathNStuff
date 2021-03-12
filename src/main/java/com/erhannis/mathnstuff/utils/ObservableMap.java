@@ -7,15 +7,18 @@ package com.erhannis.mathnstuff.utils;
 
 import java.util.HashMap;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 /**
  * (Fairly) thread-safe Observable Map. Triggers callbacks when the stored value is
- * changed, as measured by == . All methods are synchronized, and do not
+ * changed. All methods are synchronized, and do not
  * themselves trigger any asynchronous behavior. (If the callbacks e.g. start
  * threads or something, that's on them.)
  *
  * Throwables thrown from any callback are logged, and otherwise ignored.
+ * 
+ * Mechanism used to check for changes depends on checkIdentical, in constructor.
  * 
  * Note: the map is modified BEFORE the callbacks are run, so is should be ok to
  * call .get() from inside a callback.
@@ -45,6 +48,23 @@ public class ObservableMap<KEY, VAL> {
   private HashMap<Object, Consumer<Change<KEY, VAL>>> subscriptions = new HashMap<>();
   private HashMap<KEY, VAL> map = new HashMap<>();
 
+  private boolean checkIdentical = false;
+
+  /**
+   * Defaults `checkIdentical` to false.
+   */
+  public ObservableMap() {
+    this(false);
+  }
+
+  /**
+   * If `checkIdentical`, uses `==` to check if values have changed.  Else, uses `Objects.equals()`.
+   * @param checkIdentical 
+   */
+  public ObservableMap(boolean checkIdentical) {
+    this.checkIdentical = checkIdentical;
+  }
+  
   /**
    * Put value. If this adds an entry, or changes an existing entry (by != ),
    * synchronously and sequentially runs callbacks.
@@ -55,7 +75,7 @@ public class ObservableMap<KEY, VAL> {
    */
   public synchronized VAL put(KEY key, VAL newValue) {
     VAL oldVal = null;
-    if (!map.containsKey(key) || map.get(key) != newValue) {
+    if (!map.containsKey(key) || ((checkIdentical && newValue != map.get(key)) || (!checkIdentical && Objects.equals(newValue, map.get(key))))) {
       Change<KEY, VAL> change;
       if (map.containsKey(key)) {
         // So value is different
