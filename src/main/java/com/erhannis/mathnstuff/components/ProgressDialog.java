@@ -36,6 +36,9 @@ public class ProgressDialog extends javax.swing.JDialog {
     this.setTitle(title);
     lMessage.setText(message);
     this.pack();
+    if (parent != null) {
+      this.setLocationRelativeTo(parent);
+    }
   }
 
   /**
