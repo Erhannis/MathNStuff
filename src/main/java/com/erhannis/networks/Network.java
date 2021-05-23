@@ -161,4 +161,12 @@ public class Network {
         }
         edges.addAll(mirrors);
     }
+    
+    public void connect(Node n1, Node n2, int capacity, int cost) {
+        n1.connections.add(n2);
+        Edge e = new Edge(n1, n2, capacity, cost);
+        n1.edgesOut.add(e);
+        n2.edgesIn.add(e);
+        this.edges.add(e);
+    }
 }

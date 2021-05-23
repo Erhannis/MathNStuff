@@ -17,7 +17,7 @@ public class Node {
     public long id = Network.r.nextLong();
     public double x = -1;
     public double y = -1;
-    public HashSet<Node> connections = new HashSet<Node>();
+    public HashSet<Node> connections = new HashSet<Node>(); //TODO ...This seems redundant with edgesOut.
     public HashSet<Edge> edgesIn = new HashSet<Edge>();
     public HashSet<Edge> edgesOut = new HashSet<Edge>();
     

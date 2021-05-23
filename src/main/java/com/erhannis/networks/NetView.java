@@ -62,6 +62,8 @@ public class NetView extends JPanel {
     public NetView(Network network) {
         this.network = network;
         this.setFocusable(true);
+        
+        this.init();
     }
 
     public Color alterColorIfHighlighted(Edge e, Color c) {
@@ -161,7 +163,8 @@ public class NetView extends JPanel {
         this.repaint();
     }
 
-    public void init() {
+    // Why did this exist separately??
+    private void init() {
         // Add initial node
 //        Node node = new Node();
 //        node.x = 32;
