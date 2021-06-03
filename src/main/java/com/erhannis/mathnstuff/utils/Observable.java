@@ -50,14 +50,17 @@ public class Observable<T> {
   public synchronized void set(T newValue) {
     if ((checkIdentical && newValue != value) || (!checkIdentical && !Objects.equals(newValue, value))) {
       value = newValue;
-      for (Consumer<T> callback : subscriptions.values()) {
-        try {
-          callback.accept(value);
-        } catch (Throwable t) {
-          t.printStackTrace();
-        }
-      }
+      trigger();
     }
+  }
+  
+  /**
+   * Set value.  Regardless of value change, synchronously and sequentially runs callbacks.
+   * @param newValue 
+   */
+  public synchronized void setAndTrigger(T newValue) {
+    value = newValue;
+    trigger();
   }
   
   /**
@@ -101,5 +104,20 @@ public class Observable<T> {
   
   public synchronized void unsubscribeAll() {
     subscriptions.clear();
+  }
+  
+  /**
+   * Triggers callbacks without changing the value.
+   * Intended for use where the value changes without changing - like, the 5th
+   * item in one list becomes the 5th item in a different list.
+   */
+  public synchronized void trigger() {
+    for (Consumer<T> callback : subscriptions.values()) {
+      try {
+        callback.accept(value);
+      } catch (Throwable t) {
+        t.printStackTrace();
+      }
+    }
   }
 }
