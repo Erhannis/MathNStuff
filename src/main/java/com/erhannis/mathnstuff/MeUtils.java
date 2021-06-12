@@ -16,6 +16,10 @@ import java.io.OutputStream;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.Charset;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -833,6 +837,21 @@ public class MeUtils {
       fw.append(text);
       fw.flush();
       fw.close();
+    }
+    
+    /**
+     * https://stackoverflow.com/a/9670279/513038
+     * Apparently inefficient
+     * 
+     * @param chars
+     * @return 
+     */
+    public static byte[] charsToBytes(char[] chars) {
+      CharBuffer charBuffer = CharBuffer.wrap(chars);
+      ByteBuffer byteBuffer = Charset.forName("UTF-8").encode(charBuffer);
+      byte[] bytes = Arrays.copyOfRange(byteBuffer.array(), byteBuffer.position(), byteBuffer.limit());
+      Arrays.fill(byteBuffer.array(), (byte) 0); // clear sensitive data
+      return bytes;
     }
     
     //<editor-fold defaultstate="collapsed" desc="Beautiful Unsafe things from mishadoff.com">
