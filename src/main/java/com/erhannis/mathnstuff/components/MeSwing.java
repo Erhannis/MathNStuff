@@ -6,7 +6,9 @@
 package com.erhannis.mathnstuff.components;
 
 import java.util.Arrays;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 
 /**
@@ -15,7 +17,7 @@ import javax.swing.JPasswordField;
  */
 public class MeSwing {
     /**
-     * "For stronger security, it is recommended that the returned character array be cleared after use by setting each character to zero."
+     * "For stronger security, it is recommended that the returned character array be cleared after use by setting each character to zero."<br/>
      * See {@link #clearChars(char[])}
      * @return 
      */
@@ -30,13 +32,19 @@ public class MeSwing {
      * @return 
      */
     public static char[] showPasswordDialog(String prompt) {
-        JPasswordField pf = new JPasswordField();
-        int okCxl = JOptionPane.showConfirmDialog(null, pf, prompt, JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
-
-        if (okCxl == JOptionPane.OK_OPTION) {
-            return pf.getPassword();
+        final JPasswordField passwordField = new JPasswordField();
+        JOptionPane pane = new JOptionPane(passwordField, JOptionPane.QUESTION_MESSAGE, JOptionPane.OK_CANCEL_OPTION) {
+            @Override
+            public void selectInitialValue() {
+                passwordField.requestFocusInWindow();
+            }
+        };
+        pane.createDialog(null, prompt).setVisible(true);
+        if (pane.getValue() == (Integer)JOptionPane.OK_OPTION) {
+            return passwordField.getPassword();
+        } else {
+            return null;
         }
-        return null;
     }
     
     public static void clearChars(char[] chars) {
