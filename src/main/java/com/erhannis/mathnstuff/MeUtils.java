@@ -16,14 +16,25 @@ import java.io.OutputStream;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.net.InetAddress;
+import java.net.InterfaceAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
 import java.util.logging.Level;
@@ -319,7 +330,7 @@ public class MeUtils {
         return sb.toString();
     }
 
-    public static StringBuilder arrayToStringBuilder(Object array) { 
+    public static StringBuilder arrayToStringBuilder(Object array) {
         StringBuilder sb = new StringBuilder();
         if (array == null) {
             sb.append(array);
@@ -852,6 +863,86 @@ public class MeUtils {
       byte[] bytes = Arrays.copyOfRange(byteBuffer.array(), byteBuffer.position(), byteBuffer.limit());
       Arrays.fill(byteBuffer.array(), (byte) 0); // clear sensitive data
       return bytes;
+    }
+
+    public static String join(String delimiter, Iterable elements) {
+        StringBuilder sb = new StringBuilder();
+        Iterator i = elements.iterator();
+        while (i.hasNext()) {
+            sb.append(i.next()+"");
+            if (i.hasNext()) {
+                sb.append(delimiter);
+            }
+        }
+        return sb.toString();
+    }
+
+    /**
+     * See {@link #collect(java.util.Collection, com.erhannis.mathnstuff.Function1) }
+     * @param <T>
+     * @param initial
+     * @param mapping
+     * @return 
+     */
+    public static <T> HashSet<T> collect(Enumeration<T> initial, Function1<T,Enumeration<T>> mapping) {
+        List<T> iList = Collections.list(initial);
+        HashSet<T> result = new HashSet<>(iList);
+        LinkedList<T> nextCrop = new LinkedList<>(iList);
+        while (!nextCrop.isEmpty()) {
+            T t = nextCrop.pop();
+            Enumeration<T> sub = mapping.apply(t);
+            while (sub.hasMoreElements()) {
+                T t2 = sub.nextElement();
+                if (!result.contains(t2)) {
+                    result.add(t2);
+                    nextCrop.add(t2);
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Recursively collect all elements from a graph/tree/whatever, necessarily ignoring duplicates.
+     * @param <T>
+     * @param initial
+     * @param mapping
+     * @return 
+     */
+    public static <T> HashSet<T> collect(Collection<T> initial, Function1<T,Collection<T>> mapping) {
+        HashSet<T> result = new HashSet<>(initial);
+        LinkedList<T> nextCrop = new LinkedList<>(initial);
+        while (!nextCrop.isEmpty()) {
+            T t = nextCrop.pop();
+            for (T t2 : mapping.apply(t)) {
+                if (!result.contains(t2)) {
+                    result.add(t2);
+                    nextCrop.add(t2);
+                }
+            }
+        }
+        return result;
+    }
+    
+    // Adapted from https://www.baeldung.com/java-broadcast-multicast
+    public static List<InetAddress> listAllInterfaceAddresses() throws SocketException {
+        List<InetAddress> addressList = new ArrayList<>();
+        Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
+        while (interfaces.hasMoreElements()) {
+            NetworkInterface networkInterface = interfaces.nextElement();
+
+//            if (networkInterface.isLoopback() || !networkInterface.isUp()) {
+//                continue;
+//            }
+            //TODO What about sub-interfaces?
+            for (InterfaceAddress ia : networkInterface.getInterfaceAddresses()) {
+                InetAddress addr = ia.getAddress();
+                if (addr != null) {
+                    addressList.add(addr);
+                }
+            }
+        }
+        return addressList;
     }
     
     //<editor-fold defaultstate="collapsed" desc="Beautiful Unsafe things from mishadoff.com">
