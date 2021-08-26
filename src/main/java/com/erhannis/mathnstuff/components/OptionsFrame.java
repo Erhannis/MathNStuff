@@ -175,7 +175,19 @@ public class OptionsFrame extends javax.swing.JFrame {
                         try {
                             v = Integer.parseInt(newValue);
                         } catch (NumberFormatException ex) {
-                            JOptionPane.showMessageDialog(this, "Error, please enter an integer");
+                            JOptionPane.showMessageDialog(this, "Error, please enter an integer (max 32 bit)");
+                            return;
+                        }
+                        options.set(e.getKey(), v);
+                    }
+                } else if (e.getValue() instanceof Long) {
+                    String newValue = JOptionPane.showInputDialog(this, e.getKey() + " (long integer)", e.getValue());
+                    if (newValue != null) {
+                        long v = 0;
+                        try {
+                            v = Long.parseLong(newValue);
+                        } catch (NumberFormatException ex) {
+                            JOptionPane.showMessageDialog(this, "Error, please enter an integer (max 64 bit)");
                             return;
                         }
                         options.set(e.getKey(), v);
