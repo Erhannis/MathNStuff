@@ -944,6 +944,39 @@ public class MeUtils {
         }
         return addressList;
     }
+
+    // https://howtodoinjava.com/java/regex/java-clean-ascii-text-non-printable-chars/
+    public static String cleanTextContent(String text) {
+        return cleanTextContent(text, "");
+    }
+    public static String cleanTextContent(String text, String replacement) {
+        // strips off all non-ASCII characters
+        text = text.replaceAll("[^\\x00-\\x7F]", replacement);
+
+        // erases all the ASCII control characters
+        text = text.replaceAll("[\\p{Cntrl}&&[^\r\n\t]]", replacement);
+
+        // removes non-printable characters from Unicode
+        text = text.replaceAll("\\p{C}", replacement);
+
+        return text.trim();
+    }
+    
+    public static Throwable getStackTrace() {
+        try {
+            throw new RuntimeException();
+        } catch (RuntimeException e) {
+            return e;
+        }
+    }
+
+    public static Throwable getStackTrace(String msg) {
+        try {
+            throw new RuntimeException(msg);
+        } catch (RuntimeException e) {
+            return e;
+        }
+    }
     
     //<editor-fold defaultstate="collapsed" desc="Beautiful Unsafe things from mishadoff.com">
     
