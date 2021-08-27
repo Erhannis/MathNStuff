@@ -6,6 +6,7 @@ package com.erhannis.mathnstuff;
  */
 
 
+import java.awt.Color;
 import java.awt.geom.Rectangle2D;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -689,6 +690,10 @@ public class MeUtils {
                 rstart = lend + 1;
             }
         }
+    }
+    
+    public static Color interpolateColors(Color a, Color b, double value) {
+        return new Color((int)((a.getRed() * (1 - value)) + (b.getRed() * value)), (int)((a.getGreen() * (1 - value)) + (b.getGreen() * value)), (int)((a.getBlue() * (1 - value)) + (b.getBlue() * value)), (int)((a.getAlpha() * (1 - value)) + (b.getAlpha() * value)));
     }
     
     public static long interpolateColors(long a, long b, double value) {
