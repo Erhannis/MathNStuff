@@ -14,6 +14,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -38,6 +40,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.codec.digest.UnixCrypt;
@@ -981,6 +984,54 @@ public class MeUtils {
         } catch (RuntimeException e) {
             return e;
         }
+    }
+
+    /**
+     * Handles the buffering/blocking management aspect of trying to stream bytes.
+     * Pass in a consumer that will feed data into an OutputStream, and a paired
+     * InputStream will be returned.
+     * A thread will be spun up to run it, and the OutputStream will block
+     * when the internal buffer is full, so the thread doesn't generate data
+     * faster than it's read.<br/>
+     * Default buffer size is 1024.
+     * @param streamer
+     * @return 
+     * @see #incrementalStream(int, com.erhannis.mathnstuff.Consumer1) 
+     */
+    public static InputStream incrementalStream(final Consumer1<OutputStream> streamer) {
+        return incrementalStream(1024, streamer);
+    }
+    
+    /**
+     * See {@link #incrementalStream(com.erhannis.mathnstuff.Consumer1) }
+     * @param buffer
+     * @param streamer
+     * @return 
+     * @see #incrementalStream(com.erhannis.mathnstuff.Consumer1) 
+     */
+    public static InputStream incrementalStream(int buffer, final Consumer1<OutputStream> streamer) {
+        final PipedInputStream pis = new PipedInputStream(buffer);
+        final PipedOutputStream pos;
+        try {
+            pos = new PipedOutputStream(pis);
+        } catch (IOException ex) {
+            // This should never happen
+            Logger.getLogger(MeUtils.class.getName()).log(Level.SEVERE, null, ex);
+            throw new RuntimeException(ex);
+        }
+        
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                streamer.apply(pos);
+                try {
+                    pos.close();
+                } catch (IOException ex) {
+                    Logger.getLogger(MeUtils.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }).start();
+        return pis;
     }
     
     //<editor-fold defaultstate="collapsed" desc="Beautiful Unsafe things from mishadoff.com">
