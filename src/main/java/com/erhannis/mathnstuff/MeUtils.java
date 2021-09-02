@@ -1064,6 +1064,20 @@ public class MeUtils {
         }
     }
     
+    /**
+     * Catches any Throwable thrown by the lambda and returns null instead.
+     * @param <T>
+     * @param method
+     * @return 
+     */
+    public static <T> T orNull(ThrowingSupplier1<T> method) {
+        try {
+            return method.get();
+        } catch (Throwable t) {
+            return null;
+        }
+    }
+    
     //<editor-fold defaultstate="collapsed" desc="Beautiful Unsafe things from mishadoff.com">
     
     /**
