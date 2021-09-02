@@ -885,6 +885,19 @@ public class MeUtils {
         return sb.toString();
     }
 
+    public static <T> String join(String delimiter, T[] elements) {
+        StringBuilder sb = new StringBuilder();
+        boolean first = true;
+        for (T el : elements) {
+            if (!first) {
+                sb.append(delimiter);
+            }
+            first = false;
+            sb.append(el+"");
+        }
+        return sb.toString();
+    }
+
     /**
      * See {@link #collect(java.util.Collection, com.erhannis.mathnstuff.Function1) }
      * @param <T>
@@ -1032,6 +1045,23 @@ public class MeUtils {
             }
         }).start();
         return pis;
+    }
+    
+    // This oughtta be built in....
+    public static int compare(String a, String b) {
+        if (a == null) {
+            if (b == null) {
+                return 0;
+            } else {
+                return -1;
+            }
+        } else {
+            if (b == null) {
+                return 1;
+            } else {
+                return a.compareTo(b);
+            }
+        }
     }
     
     //<editor-fold defaultstate="collapsed" desc="Beautiful Unsafe things from mishadoff.com">
