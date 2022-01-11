@@ -24,6 +24,8 @@ public class FactoryHashMap<T, U> extends HashMap<T, U> {
   }
 
   /**
+   * If there's a U for key, return that.  Otherwise, create a new U with the
+   * constructor, store it for key, and return it.
    * Warning: will throw a ClassCastException if `key` is not a T.
    * @param key
    * @return 

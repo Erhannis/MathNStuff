@@ -36,7 +36,7 @@ public class OptionsFrame extends javax.swing.JFrame {
      * Creates new form OptionsFrame, defaulting to DEFAULT_OPTIONS_FILENAME ("options.dat" as of this writing) for filename.
      */
     public OptionsFrame(Options options) {
-        this(options, "options.dat");
+        this(options, DEFAULT_OPTIONS_FILENAME);
     }
     
     /**
@@ -51,6 +51,11 @@ public class OptionsFrame extends javax.swing.JFrame {
         initComponents();
     }
 
+    public OptionsFrame(String message, Options options, String optionsFilename) {
+        this(options, optionsFilename);
+        this.labelMessage.setText(message);
+    }
+    
     private void reload() {
         listModel.clear();
         FactoryHashMap<Object, HashSet<String>> reverse = new FactoryHashMap<>(new Factory<Object, HashSet<String>>() {
@@ -84,6 +89,7 @@ public class OptionsFrame extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         listOptions = new javax.swing.JList<>();
         btnReload = new javax.swing.JButton();
+        labelMessage = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Options");
@@ -113,18 +119,22 @@ public class OptionsFrame extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(331, Short.MAX_VALUE)
+                .addContainerGap()
+                .addComponent(labelMessage)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(btnReload)
                 .addContainerGap())
-            .addComponent(jScrollPane1)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 414, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(btnReload)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnReload)
+                    .addComponent(labelMessage))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 234, Short.MAX_VALUE))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 233, Short.MAX_VALUE))
         );
 
         pack();
@@ -258,6 +268,7 @@ public class OptionsFrame extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnReload;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JLabel labelMessage;
     private javax.swing.JList<Stringable<Entry<String,Object>>> listOptions;
     // End of variables declaration//GEN-END:variables
 }
