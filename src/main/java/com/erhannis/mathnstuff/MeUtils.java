@@ -642,7 +642,11 @@ public class MeUtils {
     }
 
     public static void pipeInputStreamToOutputStream(InputStream is, OutputStream os) throws IOException {
-        byte[] buf = new byte[256];
+        pipeInputStreamToOutputStream(256, is, os);
+    }
+
+    public static void pipeInputStreamToOutputStream(int buffer, InputStream is, OutputStream os) throws IOException {
+        byte[] buf = new byte[buffer];
         int wrote = 0;
         while ((wrote = is.read(buf)) >= 0) {
             os.write(buf, 0, wrote);
@@ -1054,7 +1058,7 @@ public class MeUtils {
     private static final DateFormat httpDF = new SimpleDateFormat("EEE, MMM dd HH:mm:ss zzz yyyy");
     public static InputStream dumbHttpChunks(final String mimeType, final InputStream is) {
         System.out.println("timestamp: " + httpDF.format(new Date()));
-        return MeUtils.incrementalStream(new Consumer1<OutputStream>() {
+        return MeUtils.incrementalStream(0x10000, new Consumer1<OutputStream>() {
             @Override
             public void apply(OutputStream os) {
                 String header = "HTTP/1.1 200 OK \r\nContent-Type: " + mimeType + "\r\nDate: " + httpDF.format(new Date()) + "\r\nConnection: keep-alive\r\nTransfer-Encoding: chunked\r\n\r\n";
