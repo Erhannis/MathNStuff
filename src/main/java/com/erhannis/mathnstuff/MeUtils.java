@@ -26,10 +26,13 @@ import java.net.SocketException;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -1046,6 +1049,62 @@ public class MeUtils {
             }
         }).start();
         return pis;
+    }
+
+    private static final DateFormat httpDF = new SimpleDateFormat("EEE, MMM dd HH:mm:ss zzz yyyy");
+    public static InputStream dumbHttpChunks(final String mimeType, final InputStream is) {
+        System.out.println("timestamp: " + httpDF.format(new Date()));
+        return MeUtils.incrementalStream(new Consumer1<OutputStream>() {
+            @Override
+            public void apply(OutputStream os) {
+                String header = "HTTP/1.1 200 OK \r\nContent-Type: " + mimeType + "\r\nDate: " + httpDF.format(new Date()) + "\r\nConnection: keep-alive\r\nTransfer-Encoding: chunked\r\n\r\n";
+
+                try {
+                    os.write(header.getBytes());
+
+                    final int N = 0x4000;
+                    byte[] buf = new byte[N];
+                    final byte[] RN = "\r\n".getBytes();
+                    int accumulated = 0;
+                    int read = 0;
+                    while ((read = is.read(buf, accumulated, buf.length - accumulated)) >= 0) {
+                        if (read > 0) {
+                            accumulated += read;
+                            if (accumulated == N) {
+                                os.write((Integer.toHexString(N)).getBytes());
+                                os.write(RN);
+                                os.write(buf);
+                                os.write(RN);
+                                accumulated = 0;
+                            }
+                        }
+                    }
+                    if (accumulated > 0) {
+                        os.write((Integer.toHexString(accumulated)).getBytes());
+                        os.write(RN);
+                        os.write(buf, 0, accumulated);
+                        os.write(RN);
+                        accumulated = 0;
+                    }
+                    os.write("0\r\n\r\n".getBytes());
+                    os.flush();
+                    os.close();
+                    is.close();
+                } catch (IOException ex) {
+                    Logger.getLogger(MeUtils.class.getName()).log(Level.SEVERE, null, ex);
+                    try {
+                        os.flush();
+                    } catch (IOException ex1) {
+                        Logger.getLogger(MeUtils.class.getName()).log(Level.SEVERE, null, ex1);
+                    }
+                    try {
+                        os.close();
+                    } catch (IOException ex1) {
+                        Logger.getLogger(MeUtils.class.getName()).log(Level.SEVERE, null, ex1);
+                    }
+                }
+            }
+        });
     }
     
     // This oughtta be built in....
