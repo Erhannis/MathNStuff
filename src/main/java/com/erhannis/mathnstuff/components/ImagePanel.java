@@ -15,6 +15,11 @@ import java.awt.Image;
  */
 public class ImagePanel extends javax.swing.JPanel {
 
+  public ImagePanel(Image image) {
+      this();
+      this.setImage(image);
+  }
+    
   /**
    * Creates new form ImagePanel
    */
