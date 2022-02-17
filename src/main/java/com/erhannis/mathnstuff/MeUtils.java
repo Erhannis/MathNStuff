@@ -1141,7 +1141,21 @@ public class MeUtils {
             return null;
         }
     }
-  
+
+    /**
+     * Catches any Throwable thrown by the lambda and returns `def` instead.
+     * @param <T>
+     * @param method
+     * @return
+     */
+    public static <T> T orDef(ThrowingSupplier1<T> method, T def) {
+        try {
+            return method.get();
+        } catch (Throwable t) {
+            return def;
+        }
+    }
+
     // https://stackoverflow.com/a/29836273/513038
     // May have endianness problems
     public static UUID asUuid(byte[] bytes) {
