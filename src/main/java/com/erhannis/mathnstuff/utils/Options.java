@@ -5,6 +5,7 @@
  */
 package com.erhannis.mathnstuff.utils;
 
+import com.erhannis.mathnstuff.MeUtils;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -12,6 +13,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
@@ -103,7 +105,7 @@ public class Options implements Serializable {
             Logger.getLogger(Options.class.getName()).log(Level.SEVERE, null, ex);
             try {
                 // Back up options
-                Files.copy(optionsFile.toPath(), new File(filename+"_bak_"+System.currentTimeMillis()).toPath(), StandardCopyOption.REPLACE_EXISTING);
+                MeUtils.copyFile(optionsFile, new File(filename+"_bak_"+System.currentTimeMillis()));
             } catch (IOException ex1) {
                 //TODO This could be bad, as it might lead to your options getting erased.  Perhaps die instead?
                 System.err.println("WARNING: Failed to load, OR back up, existing options.  Options may be overwritten the next time an option is changed.");
