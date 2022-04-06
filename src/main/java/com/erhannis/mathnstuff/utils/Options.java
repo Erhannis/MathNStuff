@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -28,6 +29,69 @@ import java.util.logging.Logger;
  * @author erhannis
  */
 public class Options implements Serializable {
+    /**
+     * A hook back to a given option value; slightly easier to use than passing around a whole Options everywhere,
+     * but still permits code to react to changes in options.<br/>
+     * <br/>
+     * WARNING: if you get one by calling {@link #getOrDefaultLive(java.lang.String, java.lang.Object, boolean) } ,
+     * with a default you DON'T insert into the Options, {@link #hasChanged() } will immediately report `true`, and
+     * {@link #fetch() } will overwrite your default.<br/>
+     * <br/>
+     * Retains a reference to the Options.<br/>
+     * Not entirely thread safe - probably won't crash, but may not give entirely consistent results between threads.<br/>
+     * <br/>
+     * //TODO Make Alting etc?
+     * @param <T> 
+     */
+    public static class LiveOption<T> {
+        private final Options options;
+        private final String key;
+        private T cached;
+        
+        private LiveOption(Options options, String key, T cached) {
+            this.options = options;
+            this.key = key;
+            this.cached = cached;
+        }
+        
+        /**
+         * Returns the cached value of the option.
+         * @return cached value
+         */
+        public T val() {
+            return this.cached;
+        }
+        
+        /**
+         * Refreshed the cached value of the option, from the Options, and returns the value.
+         * @return 
+         */
+        public T fetch() {
+            this.cached = (T)this.options.get(key);
+            return this.cached;
+        }
+        
+        /**
+         * Reports whether the value of the option is different than cached, according to Objects.equals(X,Y).<br/>
+         * Note that this still pulls the value, so unless you have processing
+         * you need to do iff change, you might as well use {@link #fetch() }.
+         * @return 
+         */
+        public boolean hasChanged() {
+            T current = (T)this.options.get(key);
+            return !Objects.equals(this.cached, current);
+        }
+        
+        /**
+         * Makes a shallow copy of the LiveOption, so different threads can
+         * update their own cached version without treading on each other's toes.
+         * @return a shallow copy of the LiveOption.
+         */
+        public LiveOption<T> copy() {
+            return new LiveOption<T>(options, key, cached);
+        }
+    }
+    
     private LinkedHashMap<String, Object> data = new LinkedHashMap<>();
     
     public synchronized Object set(String key, Object value) {
@@ -59,6 +123,27 @@ public class Options implements Serializable {
     }
     
     /**
+     * Returns a {@link LiveOption}, a 
+     * 
+     * @param key
+     * @param def
+     * @param insert whether to insert the default if nonexistent
+     * @return 
+     */
+    public synchronized <T> LiveOption<T> getOrDefaultLive(String key, T def, boolean insert) {
+        if (data.containsKey(key)) {
+            T value = (T)data.remove(key);
+            data.put(key, value);
+            return new LiveOption<T>(this, key, value);
+        } else {
+            if (insert) {
+                data.put(key, def);
+            }
+            return new LiveOption<T>(this, key, def);
+        }
+    }
+    
+    /**
      * {@link #getOrDefault(java.lang.String, java.lang.Object, boolean)}, inserting the default
      * @param key
      * @param def
@@ -66,6 +151,16 @@ public class Options implements Serializable {
      */
     public synchronized Object getOrDefault(String key, Object def) {
         return getOrDefault(key, def, true);
+    }
+
+    /**
+     * {@link #getOrDefaultLive(java.lang.String, java.lang.Object, boolean)}, inserting the default
+     * @param key
+     * @param def
+     * @return 
+     */
+    public synchronized <T> LiveOption<T> getOrDefaultLive(String key, T def) {
+        return this.<T>getOrDefaultLive(key, def, true);
     }
     
     public synchronized Object get(String key) {
