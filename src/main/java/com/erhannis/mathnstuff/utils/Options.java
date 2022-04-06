@@ -44,14 +44,33 @@ public class Options implements Serializable {
      * @param <T> 
      */
     public static class LiveOption<T> {
-        private final Options options;
-        private final String key;
-        private T cached;
+        final Options options;
+        final String key;
+        T cached;
         
         private LiveOption(Options options, String key, T cached) {
             this.options = options;
             this.key = key;
             this.cached = cached;
+        }
+        
+        public static <K> LiveOption<K> dummy(K value) {
+            return new LiveOption<K>(null, null, value) {
+                @Override
+                public K fetch() {
+                    return this.cached;
+                }
+
+                @Override
+                public boolean hasChanged() {
+                    return false;
+                }
+
+                @Override
+                public LiveOption<K> copy() {
+                    return this;
+                }
+            };
         }
         
         /**
