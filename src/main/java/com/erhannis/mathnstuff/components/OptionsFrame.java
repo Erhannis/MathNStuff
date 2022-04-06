@@ -18,8 +18,11 @@ import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 /**
  * //TODO Allow set options //TODO Persist options
@@ -49,6 +52,19 @@ public class OptionsFrame extends javax.swing.JFrame {
         options.getOrDefault("OptionsFrame.AUTOSAVE_OPTIONS", true); // Preloading default
         reload();
         initComponents();
+        
+        // Listen for changes in the text
+        tfFilter.getDocument().addDocumentListener(new DocumentListener() {
+          public void changedUpdate(DocumentEvent e) {
+            reload();
+          }
+          public void removeUpdate(DocumentEvent e) {
+            reload();
+          }
+          public void insertUpdate(DocumentEvent e) {
+            reload();
+          }
+        });
     }
 
     public OptionsFrame(String message, Options options, String optionsFilename) {
@@ -57,6 +73,14 @@ public class OptionsFrame extends javax.swing.JFrame {
     }
     
     private void reload() {
+        Pattern filter = null;
+        try {
+            if (tfFilter != null) {
+                filter = Pattern.compile(tfFilter.getText());
+            }
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
         listModel.clear();
         FactoryHashMap<Object, HashSet<String>> reverse = new FactoryHashMap<>(new Factory<Object, HashSet<String>>() {
             @Override
@@ -67,7 +91,9 @@ public class OptionsFrame extends javax.swing.JFrame {
         //Collections.sort
         for (Entry<String, Object> e : options.getRecentEntries()) {
             Stringable<Entry<String, Object>> s = new Stringable<Entry<String, Object>>(e, e.getKey() + " : " + e.getValue());
-            listModel.addElement(s);
+            if (filter == null || filter.matcher(s.toString()).find()) {
+                listModel.addElement(s);
+            }
             reverse.get(s.val.getValue()).add(s.val.getKey());
         }
         for (Entry<Object, HashSet<String>> e : reverse.entrySet()) {
@@ -90,6 +116,7 @@ public class OptionsFrame extends javax.swing.JFrame {
         listOptions = new javax.swing.JList<>();
         btnReload = new javax.swing.JButton();
         labelMessage = new javax.swing.JLabel();
+        tfFilter = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Options");
@@ -114,17 +141,23 @@ public class OptionsFrame extends javax.swing.JFrame {
             }
         });
 
+        tfFilter.setText("(?i)");
+        tfFilter.setToolTipText("Regex filter");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(labelMessage)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(btnReload)
-                .addContainerGap())
             .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 414, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(tfFilter)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(labelMessage)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btnReload)))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -133,8 +166,10 @@ public class OptionsFrame extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnReload)
                     .addComponent(labelMessage))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 233, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(tfFilter, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 215, Short.MAX_VALUE))
         );
 
         pack();
@@ -270,5 +305,6 @@ public class OptionsFrame extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel labelMessage;
     private javax.swing.JList<Stringable<Entry<String,Object>>> listOptions;
+    private javax.swing.JTextField tfFilter;
     // End of variables declaration//GEN-END:variables
 }

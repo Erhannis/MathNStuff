@@ -24,14 +24,19 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Group type="102" alignment="1" attributes="0">
+          <Component id="jScrollPane1" alignment="0" pref="414" max="32767" attributes="0"/>
+          <Group type="102" alignment="0" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="labelMessage" min="-2" max="-2" attributes="0"/>
-              <EmptySpace max="32767" attributes="0"/>
-              <Component id="btnReload" min="-2" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Component id="tfFilter" max="32767" attributes="0"/>
+                  <Group type="102" attributes="0">
+                      <Component id="labelMessage" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="32767" attributes="0"/>
+                      <Component id="btnReload" min="-2" max="-2" attributes="0"/>
+                  </Group>
+              </Group>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
-          <Component id="jScrollPane1" alignment="0" pref="414" max="32767" attributes="0"/>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">
@@ -42,8 +47,10 @@
                   <Component id="btnReload" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="labelMessage" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace type="unrelated" max="-2" attributes="0"/>
-              <Component id="jScrollPane1" pref="233" max="32767" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="tfFilter" min="-2" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="jScrollPane1" pref="215" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -81,6 +88,12 @@
       </Events>
     </Component>
     <Component class="javax.swing.JLabel" name="labelMessage">
+    </Component>
+    <Component class="javax.swing.JTextField" name="tfFilter">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="(?i)"/>
+        <Property name="toolTipText" type="java.lang.String" value="Regex filter"/>
+      </Properties>
     </Component>
   </SubComponents>
 </Form>
