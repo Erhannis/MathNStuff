@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * Wrapper around a HashMap - key a list of junk to a value.
  * 
- * Note that this calls Arrays.asList(keys) whenever you call get or put.
+ * Note that this calls Arrays.asList(keys) whenever you call get, put, remove, or containsKey.
  * 
  * @author erhannis
  */
@@ -35,6 +35,18 @@ public class ListMap<T, U> {
     return map.get(Arrays.asList(keys));
   }
 
+  public U remove(T... keys) {
+    return map.remove(Arrays.asList(keys));
+  }
+  
+  public boolean containsKey(T... keys) {
+    return map.containsKey(Arrays.asList(keys));
+  }
+
+  public boolean containsValue(U value) {
+    return map.containsValue(value);
+  }
+  
   @Override
   public int hashCode() {
     return this.map.hashCode();

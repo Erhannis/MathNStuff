@@ -13,7 +13,7 @@ import java.util.Set;
 /**
  * Wrapper around a HashMap - key a set of junk to a value.
  * 
- * Note that this creates a new HashSet whenever you call get or put.
+ * Note that this creates a new HashSet whenever you call get, put, remove, or containsKey.
  * 
  * @author erhannis
  */
@@ -36,6 +36,18 @@ public class BagMap<T, U> {
     return map.get(new HashSet<T>(Arrays.asList(keys)));
   }
 
+  public U remove(T... keys) {
+    return map.remove(new HashSet<T>(Arrays.asList(keys)));
+  }
+  
+  public boolean containsKey(T... keys) {
+    return map.containsKey(new HashSet<T>(Arrays.asList(keys)));
+  }
+
+  public boolean containsValue(U value) {
+    return map.containsValue(value);
+  }
+  
   @Override
   public int hashCode() {
     return this.map.hashCode();
