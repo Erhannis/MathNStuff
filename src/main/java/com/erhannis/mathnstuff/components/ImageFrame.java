@@ -31,25 +31,25 @@ public class ImageFrame extends javax.swing.JFrame {
         panelDisplay.repaint();
     }
     
-  public double getScale() {
-    return ((ImagePanel)panelDisplay).getScale();
-  }
+    public double getScale() {
+        return ((ImagePanel)panelDisplay).getScale();
+    }
 
-  public void setScale(double scale) {
-    ((ImagePanel)panelDisplay).setScale(scale);
-  }
+    public void setScale(double scale) {
+        ((ImagePanel)panelDisplay).setScale(scale);
+    }
 
-  public void zoomOut() {
-    ((ImagePanel)panelDisplay).zoomOut();
-  }
+    public void zoomOut() {
+        ((ImagePanel)panelDisplay).zoomOut();
+    }
 
-  public void zoomIn() {
-    ((ImagePanel)panelDisplay).zoomIn();
-  }
+    public void zoomIn() {
+        ((ImagePanel)panelDisplay).zoomIn();
+    }
 
-  public Image getImage() {
-    return ((ImagePanel)panelDisplay).getImage();
-  }
+    public Image getImage() {
+        return ((ImagePanel)panelDisplay).getImage();
+    }
     
     /**
      * This method is called from within the constructor to initialize the form.
