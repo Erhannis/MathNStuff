@@ -74,7 +74,7 @@ public class OptionsFrame extends javax.swing.JFrame {
         this.labelMessage.setText(message);
     }
     
-    private void reload() {
+    public void reload() {
         Pattern filter = null;
         try {
             if (tfFilter != null) {
