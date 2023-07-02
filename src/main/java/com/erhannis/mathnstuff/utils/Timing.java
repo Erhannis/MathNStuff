@@ -47,8 +47,14 @@ public class Timing {
         return this;
     }
 
-    public Timing push(String name) {
-        return push(name, null);
+    /**
+     * Convenience.<br/>
+     * return push(""+name, null);<br/>
+     * @param name
+     * @return 
+     */
+    public Timing push(Object name) {
+        return push(""+name, null);
     }
 
     public Timing log(Object o) {
@@ -75,7 +81,7 @@ public class Timing {
     public Timing log() {
         return log(null);
     }
-
+    
     public Timing pop(Object o) {
         Pair<String, StopWatch> p0 = stack.getLast();
         p0.b.stop();
@@ -103,8 +109,19 @@ public class Timing {
 
         return this;
     }
-
+    
     public Timing pop() {
         return pop(null);
+    }
+    
+    /**
+     * Convenience.<br/>
+     * return pop().push(name);<br/>
+     * Use e.g. at the head of a loop, or between slow lines.<br/>
+     * @param name
+     * @return 
+     */
+    public Timing cycle(Object name) {
+        return pop().push(name);
     }
 }
