@@ -9,13 +9,13 @@ import java.util.Objects;
 import java.util.Scanner;
 
 /**
- *
+ * //DUMMY I'm not sure what happens if you call two of these concurrently.  Probably garbled text.
  * @author erhannis
  */
 public class TerminalUtils {
     public static String promptString(String msg) {
-        Scanner scanner = new Scanner(System.in);
         System.out.print(msg);
+        Scanner scanner = new Scanner(System.in);
         return scanner.nextLine();
     }
 
